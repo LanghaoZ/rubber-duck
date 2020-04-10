@@ -1,0 +1,8 @@
+foo "bar";
+
+server {
+	{
+		listen 80;
+	}
+}
+

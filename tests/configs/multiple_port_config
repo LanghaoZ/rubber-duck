@@ -1,0 +1,16 @@
+foo "bar";
+
+server {
+    server_name foo.com;
+    home {
+        address kelton;
+        listen {
+            port 5000;
+            zip {
+                code 90024;
+            }
+        }
+    }
+    root /home/project/foo/;
+    port 8080;
+}

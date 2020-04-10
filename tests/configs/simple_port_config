@@ -1,0 +1,7 @@
+foo "bar";
+
+server {
+    server_name foo.com;
+    port 8080;
+    root /home/project/foo/;
+}

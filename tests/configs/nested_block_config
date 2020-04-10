@@ -1,0 +1,8 @@
+foo "bar";
+
+server {
+	listen {
+		port 80;
+	}
+	server_name foo.com;
+}

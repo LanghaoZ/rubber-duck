@@ -1,0 +1,9 @@
+foo "bar";
+
+server {
+	location 80;
+	server_name foo.com;
+}
+}
+{
+

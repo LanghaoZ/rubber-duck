@@ -1,0 +1,7 @@
+foo "bar";
+
+server {
+	listen 80;
+	servername {}
+	root cs130.org;
+}
