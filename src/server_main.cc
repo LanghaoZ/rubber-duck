@@ -11,6 +11,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include "server.h"
+#include "session.h"
 #include "utils/config_parser.h"
 
 using boost::asio::ip::tcp;
@@ -38,7 +39,6 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    using namespace std; // For atoi.
     server s(io_service, port);
     std::cerr << "Server started on port " << port << std::endl;
     io_service.run();
