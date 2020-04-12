@@ -17,7 +17,7 @@ RUN ctest --output-on_failure
 FROM ubuntu:latest as deploy
 
 COPY --from=builder /usr/src/project/build/bin/server .
-COPY --from=builder /usr/src/project/conftst/test1.conf .
+COPY --from=builder /usr/src/project/conftst/rubber-duck.conf .
 
 EXPOSE 8080
 
