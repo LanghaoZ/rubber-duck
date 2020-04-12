@@ -39,6 +39,7 @@ include_directories(include)
 add_library(server_lib src/http/server/server.cc src/http/server/session.cc src/http/server/request_parser.cc src/http/server/reply.cc src/http/server/request_handler.cc)
 add_library(request_parser_lib src/http/server/request_parser.cc)
 add_library(config_parser_lib src/nginx/config_parser.cc src/nginx/config.cc src/nginx/config_statement.cc)
+add_library(reply_lib src/http/server/reply.cc)
 
 # create executable of the server program
 add_executable(server src/http/server/server_main.cc)
@@ -51,11 +52,14 @@ add_executable(config_parser_test tests/nginx/config_parser_test.cc)
 target_link_libraries(config_parser_test config_parser_lib gtest_main Boost::system)
 add_executable(request_parser_test tests/http/server/request_parser_test.cc)
 target_link_libraries(request_parser_test request_parser_lib gtest_main Boost::system)
+add_executable(reply_test tests/http/server/reply_test.cc)
+target_link_libraries(reply_test server_lib gtest_main Boost::system)
 
 # find google tests
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Update with target/test targets
 # include(cmake/CodeCoverageReportConfig.cmake)
