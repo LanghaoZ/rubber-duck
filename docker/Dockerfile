@@ -1,6 +1,6 @@
 ### Build/test container ###
 # Define builder stage
-FROM rubber-duck:base as builder
+FROM rubber-duck:latest as builder
 
 # Share work directory
 COPY . /usr/src/project
@@ -16,16 +16,11 @@ RUN ctest --output-on_failure
 # Define deploy stage
 FROM ubuntu:latest as deploy
 
-# TODO(!): Copy server output binary to "."
-# COPY --from=builder /usr/src/project/build/bin/example_server .
+COPY --from=builder /usr/src/project/build/bin/server .
+COPY --from=builder /usr/src/project/conftst/test1.conf .
 
-# TODO(!): Expose some port(s)
-# EXPOSE 80
+EXPOSE 8080
 
-# Use ENTRYPOINT to specify the binary name
-# TODO(!): Update with real server name
-# ENTRYPOINT ["./example_server"]
+ENTRYPOINT ["./server"]
 
-# Use CMD to specify arguments to ENTRYPOINT
-# TODO(!): Update with real server args
-# CMD [""]
+CMD ["rubber-duck.conf"]
