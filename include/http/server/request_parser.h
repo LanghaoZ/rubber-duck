@@ -1,5 +1,5 @@
 //
-// request_parser.hpp
+// request_parser.h
 // ~~~~~~~~~~~~~~~~~~
 //
 // Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef HTTP_REQUEST_PARSER_HPP
-#define HTTP_REQUEST_PARSER_HPP
+#ifndef HTTP_REQUEST_PARSER_H
+#define HTTP_REQUEST_PARSER_H
 
 #include <tuple>
 
@@ -93,4 +93,4 @@ private:
 } // namespace server
 } // namespace http
 
-#endif // HTTP_REQUEST_PARSER_HPP
+#endif // HTTP_REQUEST_PARSER_H

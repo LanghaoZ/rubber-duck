@@ -1,5 +1,5 @@
 //
-// request.hpp
+// request.h
 // ~~~~~~~~~~~
 //
 // Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef HTTP_REQUEST_HPP
-#define HTTP_REQUEST_HPP
+#ifndef HTTP_REQUEST_H
+#define HTTP_REQUEST_H
 
 #include <string>
 #include <vector>
@@ -31,4 +31,4 @@ struct request
 } // namespace server
 } // namespace http
 
-#endif // HTTP_REQUEST_HPP
+#endif // HTTP_REQUEST_H

@@ -1,5 +1,5 @@
 //
-// header.hpp
+// header.h
 // ~~~~~~~~~~
 //
 // Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef HTTP_HEADER_HPP
-#define HTTP_HEADER_HPP
+#ifndef HTTP_HEADER_H
+#define HTTP_HEADER_H
 
 #include <string>
 
@@ -25,4 +25,4 @@ struct header
 } // namespace server
 } // namespace http
 
-#endif // HTTP_HEADER_HPP
+#endif // HTTP_HEADER_H

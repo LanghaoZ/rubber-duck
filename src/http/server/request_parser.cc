@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include "request_parser.h"
-#include "request.h"
+#include "http/server/request_parser.h"
+#include "http/server/request.h"
 
 namespace http {
 namespace server {

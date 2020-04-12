@@ -2,16 +2,15 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 #include "gtest/gtest.h"
-#include "server.h"
-#include "session.h"
+#include "http/server/server.h"
+#include "http/server/session.h"
 
 using boost::asio::ip::tcp;
 
 void server_8080_thread()
 {
-  boost::asio::io_service io_service;
-  server s(io_service, 8080);
-  io_service.run();
+  http::server::server s("localhost", "8080");
+  s.run();
 }
 
 TEST(ServerTest, ServerReceivesBadRequest) 
@@ -58,9 +57,8 @@ TEST(ServerTest, ServerReceivesBadRequest)
 
 void server_8081_thread()
 {
-  boost::asio::io_service io_service;
-  server s(io_service, 8081);
-  io_service.run();
+  http::server::server s("localhost", "8081");
+  s.run();
 }
 
 TEST(ServerTest, ServerReceivesValidRequest)

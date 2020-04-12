@@ -1,5 +1,5 @@
 //
-// reply.hpp
+// reply.h
 // ~~~~~~~~~
 //
 // Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
@@ -8,8 +8,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef HTTP_REPLY_HPP
-#define HTTP_REPLY_HPP
+#ifndef HTTP_REPLY_H
+#define HTTP_REPLY_H
 
 #include <string>
 #include <vector>
@@ -61,4 +61,4 @@ struct reply
 } // namespace server
 } // namespace http
 
-#endif // HTTP_REPLY_HPP
+#endif // HTTP_REPLY_H
