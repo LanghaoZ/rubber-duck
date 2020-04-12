@@ -1,6 +1,6 @@
 ### Build/test container ###
 # Define builder stage
-FROM rubber-duck:latest as builder
+FROM rubber-duck:base as builder
 
 # Share work directory
 COPY . /usr/src/project
