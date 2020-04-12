@@ -12,7 +12,7 @@
 #include <boost/asio.hpp>
 #include "server.h"
 #include "session.h"
-#include "utils/config_parser.h"
+#include "config_parser.h"
 
 using boost::asio::ip::tcp;
 
@@ -26,8 +26,6 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    boost::asio::io_service io_service;
-
     NginxConfigParser parser;
     NginxConfig config;
     int port;
@@ -39,9 +37,12 @@ int main(int argc, char* argv[])
       return 1;
     }
 
+    boost::asio::io_service io_service;
+
     server s(io_service, port);
     std::cerr << "Server started on port " << port << std::endl;
     io_service.run();
+    
   }
   catch (std::exception& e)
   {
