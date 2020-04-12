@@ -36,31 +36,27 @@ message(STATUS "Boost version: ${Boost_VERSION}")
 include_directories(include)
 
 # create libraries
-add_library(server_lib src/server.cc src/session.cc src/utils/request_parser.cc src/utils/reply.cc)
-add_library(request_parser src/utils/request_parser.cc)
-add_library(reply src/utils/reply.cc)
-add_library(config_parser src/utils/config_parser.cc)
+add_library(server_lib src/server.cc src/session.cc src/request_parser.cc src/reply.cc)
+add_library(request_parser src/request_parser.cc)
+add_library(config_parser src/config_parser.cc)
 
 # create executable of the server program
 add_executable(server src/server_main.cc)
-target_link_libraries(server server_lib config_parser request_parser reply Boost::system)
+target_link_libraries(server server_lib config_parser request_parser Boost::system)
 
-# TODO(!): Update test executable name, srcs, and deps
+# add executables for tests
 add_executable(server_test tests/server_test.cc)
 target_link_libraries(server_test server_lib Boost::system Boost::thread gtest_main)
 add_executable(config_parser_test tests/config_parser_test.cc)
 target_link_libraries(config_parser_test config_parser gtest_main Boost::system)
 add_executable(request_parser_test tests/request_parser_test.cc)
 target_link_libraries(request_parser_test request_parser gtest_main Boost::system)
-add_executable(reply_test tests/reply_test.cc)
-target_link_libraries(reply_test reply gtest_main Boost::system)
 
-# TODO(!): Update with test binary
+# find google tests
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
-# TODO(!): Update with target/test targets
+# Update with target/test targets
 # include(cmake/CodeCoverageReportConfig.cmake)
 # generate_coverage_report(TARGETS example_server example_lib TESTS example_lib_test)
