@@ -6,13 +6,13 @@
 #include <memory>
 #include <cstdlib>
 #include "session.h"
-#include "request_parser.h"
-#include "reply.h"
+#include "utils/request_parser.h"
+#include "utils/reply.h"
 
 using boost::asio::ip::tcp;
 
-session::session(tcp::socket socket)
-  : socket_(std::move(socket))
+session::session(boost::asio::io_service& io_service)
+  : socket_(io_service)
 {
 }
 
@@ -23,73 +23,37 @@ tcp::socket& session::socket()
 
 void session::start()
 {
+  // socket_.async_read_some(boost::asio::buffer(data_, max_length),
+  //     boost::bind(&session::handle_read, this,
+  //       boost::asio::placeholders::error,
+  //       boost::asio::placeholders::bytes_transferred));
   do_read();
 }
 
 void session::do_read()
 {
   auto self(shared_from_this());
-  socket_.async_read_some(boost::asio::buffer(buffer_),
+  socket_.async_read_some(boost::asio::buffer(data_),
       [this, self](boost::system::error_code ec, std::size_t bytes_transferred)
       {
         if (!ec)
         {
-          auto start = buffer_.data();
-          auto end = buffer_.data() + bytes_transferred;
           http::server::request_parser::result_type result;
-          std::tie(result, start) = request_parser_.parse(
-              request_, start, end);
-          
+          std::tie(result, std::ignore) = request_parser_.parse(
+              request_, data_, data_ + bytes_transferred);
+
           if (result == http::server::request_parser::good)
           {
-
-            // put everything that was read into reply content
-            reply_.content = std::string(buffer_.data(), bytes_transferred);
-            reply_.status = http::server::reply::ok;
-            reply_.headers.resize(2);
-            reply_.headers[0].name = "Content-Type";
-            reply_.headers[0].value = "text/plain";
-            
-            // check header to tell whether there exists request body
-            int contentLength = 0;
-            size_t headerSize = 0;
-            for (int i = 0; i < request_.headers.size(); i++) 
-            {
-              if (request_.headers[i].name.compare("Content-Length") == 0) 
-              {
-                contentLength = std::stoi(request_.headers[i].value);
-              }
-              headerSize += request_.headers[i].name.size();
-              headerSize += request_.headers[i].value.size();
-            }
-
-            if (contentLength > 0) 
-            {
-              
-              // already read some bytes from request body
-              if (start != end) 
-              {
-                std::cout << "already read some bytes" << std::endl;
-                int amountRead = end - start;
-                contentLength -= amountRead;
-              }
-
-            }
-
-            // read rest of the request body
-            if (contentLength > 0) {
-              char *data = new char[contentLength];
-              size_t length = socket_.read_some(boost::asio::buffer(data, contentLength));
-              std::string body(data, data + length);
-              reply_.content += body;
-            }
-            
-            reply_.headers[1].name = "Content-Length";
-
-            // content length of the response is
-            // size of request header + size of request body
-            reply_.headers[1].value = std::to_string(reply_.content.size());
-
+            //request_handler_.handle_request(request_, reply_);
+            http::server::reply temp;
+            temp.status = http::server::reply::ok;
+            temp.content = std::string(data_, bytes_transferred);
+            temp.headers.resize(2);
+            temp.headers[0].name = "Content-Type";
+            temp.headers[0].value = "text/plain";
+            temp.headers[1].name = "Content-Length";
+            temp.headers[1].value = std::to_string(bytes_transferred);
+            reply_ = temp;
             do_write();
           }
           else if (result == http::server::request_parser::bad)
@@ -118,10 +82,40 @@ void session::do_write()
           socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both,
             ignored_ec);
         }
-
       });
 }
 
-void session::handle_request()
+
+
+
+void session::handle_read(const boost::system::error_code& error,
+    size_t bytes_transferred)
 {
+  if (!error)
+  {
+    //std::printf(data_);
+    boost::asio::async_write(socket_,
+        boost::asio::buffer(data_, bytes_transferred),
+        boost::bind(&session::handle_write, this,
+          boost::asio::placeholders::error));
+  }
+  else
+  {
+    delete this;
+  }
+}
+
+void session::handle_write(const boost::system::error_code& error)
+{
+  if (!error)
+  {
+    socket_.async_read_some(boost::asio::buffer(data_, max_length),
+        boost::bind(&session::handle_read, this,
+          boost::asio::placeholders::error,
+          boost::asio::placeholders::bytes_transferred));
+  }
+  else
+  {
+    delete this;
+  }
 }

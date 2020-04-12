@@ -1,13 +1,3 @@
-//
-// server.cpp
-// ~~~~~~~~~~
-//
-// Copyright (c) 2003-2013 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
-
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "server.h"
@@ -16,22 +6,27 @@
 using boost::asio::ip::tcp;
 
 server::server(boost::asio::io_service& io_service, short port)
-  : socket_(io_service),
+  : io_service_(io_service),
     acceptor_(io_service, tcp::endpoint(tcp::v4(), port))
 {
-  do_accept();
+  start_accept();
 }
 
-void server::do_accept()
+void server::start_accept()
 {
-  acceptor_.async_accept(socket_,
-        [this](boost::system::error_code ec)
-  {
-    if (!ec)
-    {
-      std::make_shared<session>(std::move(socket_))->start();
-    }
+  std::shared_ptr<session> new_session = std::make_shared<session>(session(io_service_));
+  acceptor_.async_accept(new_session->socket(),
+      boost::bind(&server::handle_accept, this, new_session,
+        boost::asio::placeholders::error));
+}
 
-    do_accept();
-  });
+void server::handle_accept(std::shared_ptr<session> new_session,
+    const boost::system::error_code& error)
+{
+  if (!error)
+  {
+    new_session->start();
+  }
+
+  start_accept();
 }

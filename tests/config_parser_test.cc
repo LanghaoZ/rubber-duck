@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "config_parser.h"
+#include "utils/config_parser.h"
 
 class NginxConfigParserTest : public ::testing::Test {
 	protected:
