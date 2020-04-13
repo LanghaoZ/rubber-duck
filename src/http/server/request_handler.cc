@@ -48,7 +48,7 @@ void request_handler::handle_request(const request& req, reply& rep, std::string
 
   for (int i = 0; i < req.headers.size(); i++) {
     rep.content += req.headers[i].name;
-    rep.content += " ";
+    rep.content += ": ";
     rep.content += req.headers[i].value;
     rep.content += "\r\n";
   }

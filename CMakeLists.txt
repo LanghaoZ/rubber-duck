@@ -54,12 +54,15 @@ add_executable(request_parser_test tests/http/server/request_parser_test.cc)
 target_link_libraries(request_parser_test request_parser_lib gtest_main Boost::system)
 add_executable(reply_test tests/http/server/reply_test.cc)
 target_link_libraries(reply_test server_lib gtest_main Boost::system)
+add_executable(request_handler_test tests/http/server/request_handler_test.cc)
+target_link_libraries(request_handler_test server_lib gtest_main Boost::system)
 
 # find google tests
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Update with target/test targets
 # include(cmake/CodeCoverageReportConfig.cmake)
