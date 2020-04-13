@@ -19,7 +19,7 @@ FROM ubuntu:latest as deploy
 COPY --from=builder /usr/src/project/build/bin/server .
 COPY --from=builder /usr/src/project/conftst/rubber-duck.conf .
 
-EXPOSE 8080
+EXPOSE 80
 
 ENTRYPOINT ["./server"]
 
