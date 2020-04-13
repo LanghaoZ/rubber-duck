@@ -43,13 +43,11 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    // Initialise the server.
-    const std::string address = "localhost";
-    http::server::server s(address, std::to_string(port));
+    boost::asio::io_service io_service;
+
+    http::server::server s(io_service, port);
     std::cerr << "Server started on port " << port << std::endl;
-    
-    // Run the server until stopped.
-    s.run();
+    io_service.run();
     
   }
   catch (std::exception& e)
