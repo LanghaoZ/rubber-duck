@@ -40,7 +40,7 @@ TEST_F(RequestParserTest, WrongProtc) {
 TEST_F(RequestParserTest, WrongVersionAfter) {
 
   //wrong version 1.i instead of 1.1
-  char input[1024] = "GET / HTTP/1.i\r Host: www.rubberduck.com\r\nConnection: close\r\n\r\n";
+  char input[1024] = "GET / HTTP/1.i\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\n";
   std::tie(result, std::ignore)  = parser.parse(req, input, input + strlen(input));
   bool success = result == http::server::request_parser::bad;
   EXPECT_TRUE(success);
@@ -49,7 +49,7 @@ TEST_F(RequestParserTest, WrongVersionAfter) {
 TEST_F(RequestParserTest, WrongVersionBefore) {
 
   //wrong version i.1 instead of 1.1
-  char input[1024] = "GET / HTTP/i.1\r Host: www.rubberduck.com\r\nConnection: close\r\n\r\n";
+  char input[1024] = "GET / HTTP/i.1\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\n";
   std::tie(result, std::ignore)  = parser.parse(req, input, input + strlen(input));
   bool success = result == http::server::request_parser::bad;
   EXPECT_TRUE(success);
@@ -58,7 +58,7 @@ TEST_F(RequestParserTest, WrongVersionBefore) {
 TEST_F(RequestParserTest, LackSlashN) {
 
   //wrong syntx after host
-  char input[1024] = "GET / HTTP/i.1\r Host: www.rubberduck.com\rConnection: close\r\n\r\n";
+  char input[1024] = "GET / HTTP/1.1\r\nHost: www.rubberduck.com\rConnection: close\r\n\r\n";
   std::tie(result, std::ignore)  = parser.parse(req, input, input + strlen(input));
   bool success = result == http::server::request_parser::bad;
   EXPECT_TRUE(success);
@@ -66,9 +66,10 @@ TEST_F(RequestParserTest, LackSlashN) {
 
 TEST_F(RequestParserTest, DOUBLEREQUEST) {
 
-  char input[1024] = "GET / HTTP/i.1\r Host: www.rubberduck.com\rConnection: close\r\n\r\nGET / HTTP/i.1\r Host: www.rubberduck.com\rConnection: close\r\n\r\n";
+  // the second request will be treated as request body
+  char input[1024] = "GET / HTTP/1.1\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\nGET / HTTP/1.1\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\n";
   std::tie(result, std::ignore)  = parser.parse(req, input, input + strlen(input));
-  bool success = result == http::server::request_parser::bad;
+  bool success = result == http::server::request_parser::good;
   EXPECT_TRUE(success);
 }
 
