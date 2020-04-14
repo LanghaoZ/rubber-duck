@@ -29,15 +29,7 @@ public:
   explicit request_handler();
 
   /// Handle a request and produce a reply.
-  void handle_request(const request& req, reply& rep, std::string& request_body);
-
-  /// read request body if it exists
-  void read_request_body(const request& req, 
-    boost::asio::ip::tcp::socket& socket, 
-    std::array<char, 8192>& buffer, 
-    char* start, 
-    char* end,
-    std::string& body);
+  void handle_request(const request& req, reply& rep);
 
 };
 

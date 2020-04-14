@@ -19,18 +19,24 @@ using boost::asio::ip::tcp;
 namespace http {
 namespace server {
 
-server::server(boost::asio::io_service& io_service, short port)
-  : socket_(io_service),
-    acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
+server::server(short port)
+  : io_service_(),
+    socket_(io_service_),
+    acceptor_(io_service_, tcp::endpoint(tcp::v4(), port)),
     request_handler_()
 {
   do_accept();
 }
 
+void server::run()
+{
+  io_service_.run();
+}
+
 void server::do_accept()
 {
   acceptor_.async_accept(socket_,
-        [this](boost::system::error_code ec)
+    [this](boost::system::error_code ec)
   {
     if (!ec)
     {

@@ -12,6 +12,7 @@
 #include "http/server/request_handler.h"
 #include "http/server/reply.h"
 #include "http/server/request.h"
+#include "http/server/header.h"
 
 namespace http {
 namespace server {
@@ -20,15 +21,19 @@ request_handler::request_handler()
 {
 }
 
-void request_handler::handle_request(const request& req, reply& rep, std::string& request_body)
+void request_handler::handle_request(const request& req, reply& rep)
 {
 
+  // set response status
   rep.status = http::server::reply::ok;
-  rep.headers.resize(2);
-  rep.headers[0].name = "Content-Type";
-  rep.headers[0].value = "text/plain";
-  rep.headers[1].name = "Content-Length";
 
+  // set response header
+  rep.headers.resize(2);
+  rep.headers[0].name = header::field_name_type_as_string(header::content_type);
+  rep.headers[0].value = header::field_value_type_as_string(header::text_plain);
+  rep.headers[1].name = header::field_name_type_as_string(header::content_length);
+
+  // set response content
   rep.content = "";
   rep.content += req.method;
   rep.content += " ";
@@ -54,49 +59,10 @@ void request_handler::handle_request(const request& req, reply& rep, std::string
   }
   rep.content += "\r\n";
 
-  rep.content += request_body;
+  rep.content += req.body;
 
+  // update content size in response header
   rep.headers[1].value = std::to_string(rep.content.size());
-}
-
-void request_handler::read_request_body(
-  const request& req, 
-  boost::asio::ip::tcp::socket& socket, 
-  std::array<char, 8192>& buffer, 
-  char* start, 
-  char* end,
-  std::string& body)
-{
-
-  body = "";
-
-  // check header to tell whether there exists request body
-  int contentLength = 0;
-  for (int i = 0; i < req.headers.size(); i++) 
-  {
-    if (req.headers[i].name.compare("Content-Length") == 0) 
-    {
-      contentLength = std::stoi(req.headers[i].value);
-    }
-  }
-
-  if (contentLength > 0) 
-  {
-    // already read some bytes from request body
-    if (start != end) 
-    {
-      // read the rest of the data from buffer if there is one
-      body = std::string(start, end - start);
-      contentLength -= body.size();
-    }
-  }
-
-  if (contentLength > 0) {
-    char* data = new char[contentLength];
-    size_t length = socket.read_some(boost::asio::buffer(data, contentLength));
-    body += std::string(data, data + length);
-  }
-
 }
 
 } // namespace server

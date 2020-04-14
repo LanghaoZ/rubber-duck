@@ -30,7 +30,9 @@ void session::start()
 void session::do_read()
 {
   auto self(shared_from_this());
+  // asynchronously read some data from socket and store it into buffer
   socket_.async_read_some(boost::asio::buffer(buffer_),
+    // handler to be called when the read operation completes
     [this, self](boost::system::error_code ec, std::size_t bytes_transferred)
       {
         if (!ec)
@@ -44,13 +46,16 @@ void session::do_read()
           
           if (result == http::server::request_parser::good)
           {
-            std::string request_body;
-            request_handler_.read_request_body(request_, socket_, buffer_, start, end, request_body);
-            request_handler_.handle_request(request_, reply_, request_body);
+            // buffer may contain more data beyond end of request header
+            // read more data from socket if necessary
+            request_parser_.read_request_body(request_, socket_, std::string(start, end - start));
+
+            request_handler_.handle_request(request_, reply_);
             do_write();
           }
           else if (result == http::server::request_parser::bad)
           {
+            // respond with 400 status
             reply_ = http::server::reply::stock_reply(http::server::reply::bad_request);
             do_write();
           }

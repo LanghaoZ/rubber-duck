@@ -34,20 +34,19 @@ int main(int argc, char* argv[])
     nginx::config config;
     parser.parse(argv[1], &config);
 
-    int port = config.get_port(&config);
+    int port = config.get_port();
     if (port == nginx::err_not_found) 
     {
-      std::cerr << 
-        "port not found\n"
-        "Usage: server <nginx_config_file>\n";
+      std::cerr << "port not found from " << argv[1] << "\n";
       return 1;
     }
 
-    boost::asio::io_service io_service;
+    // run the server
+    http::server::server s(port);
 
-    http::server::server s(io_service, port);
     std::cerr << "Server started on port " << port << std::endl;
-    io_service.run();
+
+    s.run();
     
   }
   catch (std::exception& e)

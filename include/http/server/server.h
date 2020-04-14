@@ -15,11 +15,13 @@ class session;
 class server
 {
 public:
-  server(boost::asio::io_service& io_service, short port);
+  server(short port);
+  void run();
 
 private:
   void do_accept();
  
+  boost::asio::io_service io_service_;
   tcp::acceptor acceptor_;
   tcp::socket socket_;
   request_handler request_handler_;

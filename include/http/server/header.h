@@ -18,6 +18,27 @@ namespace server {
 
 struct header
 {
+
+  // possible field names of request/response header
+  enum field_name_type 
+  {
+    accept,
+    accept_encoding,
+    connection,
+    host,
+    user_agent,
+    content_length,
+    content_type
+  };
+  static const char* field_name_type_as_string(field_name_type type);
+
+  // possible field values of request/response header
+  enum field_value_type
+  {
+    text_plain
+  };
+  static const char* field_value_type_as_string(field_value_type type);
+
   std::string name;
   std::string value;
 };

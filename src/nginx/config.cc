@@ -13,30 +13,29 @@ std::string config::to_string(int depth)
   return serialized_config;
 }
 
-int config::get_port(const config* config) 
+int config::get_port() 
 {
 
   int port = err_not_found;
 
-  if (config != nullptr) {  
-    for (auto statement : config->statements_) 
+  for (auto statement : statements_) 
+  {
+    if (statement->child_block_.get() == nullptr) 
     {
-      if (statement->child_block_.get() == nullptr) 
+      if (statement->tokens_.size() == 2 && statement->tokens_[0] == config_port) 
       {
-        if (statement->tokens_.size() == 2 && statement->tokens_[0] == nginx::config_port) 
-        {
-          port = atoi(statement->tokens_[1].c_str());
-          break;
-        }
-      } 
-      else 
+        port = atoi(statement->tokens_[1].c_str());
+        break;
+      }
+    } 
+    else 
+    {
+      // recursively find port
+      int ret = statement->child_block_.get()->get_port();
+      if (ret != nginx::err_not_found) 
       {
-        int ret = get_port(statement->child_block_.get());
-        if (ret != nginx::err_not_found) 
-        {
-          port = ret;
-          break;
-        }
+        port = ret;
+        break;
       }
     }
   }

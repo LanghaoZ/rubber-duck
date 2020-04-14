@@ -11,6 +11,7 @@
 #ifndef HTTP_REQUEST_PARSER_H
 #define HTTP_REQUEST_PARSER_H
 
+#include <boost/asio.hpp>
 #include <tuple>
 
 namespace http {
@@ -24,6 +25,12 @@ class request_parser
 public:
   /// Construct ready to parse the request method.
   request_parser();
+
+  /// read request body and assign it to reqeust if exists
+  void read_request_body(
+    request& req, 
+    boost::asio::ip::tcp::socket& socket, // socket to read more data from
+    const std::string& addtional_data_read); // request body that was already read
 
   /// Reset to initial parser state.
   void reset();

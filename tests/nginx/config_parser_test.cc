@@ -56,25 +56,25 @@ TEST_F(NginxConfigParserTest, NoTokenConfig) {
 }
 
 TEST_F(NginxConfigParserTest, GetPortFromNull) {
-    bool success = parser.parse("nginx/configs/example_config", &out_config);
-    int port = out_config.get_port(NULL);
+    bool success = parser.parse("nginx/configs/empty_config", &out_config);
+    int port = out_config.get_port();
     EXPECT_TRUE(port == nginx::err_not_found);
 }
 
 TEST_F(NginxConfigParserTest, GetNonNestedPort) {
     bool success = parser.parse("nginx/configs/simple_port_config", &out_config);
-    int port = out_config.get_port(&out_config);
+    int port = out_config.get_port();
     EXPECT_TRUE(port == 8080);
 }
 
 TEST_F(NginxConfigParserTest, GetNestedPort) {
     bool success = parser.parse("nginx/configs/nested_port_config", &out_config);
-    int port = out_config.get_port(&out_config);
+    int port = out_config.get_port();
     EXPECT_TRUE(port == 5000);
 }
 
 TEST_F(NginxConfigParserTest, GetMultiplePort) {
     bool success = parser.parse("nginx/configs/multiple_port_config", &out_config);
-    int port = out_config.get_port(&out_config);
+    int port = out_config.get_port();
     EXPECT_TRUE(port == 5000);
 }
