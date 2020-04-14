@@ -63,5 +63,5 @@ gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/te
 gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Update with target/test targets
-# include(cmake/CodeCoverageReportConfig.cmake)
-# generate_coverage_report(TARGETS example_server example_lib TESTS example_lib_test)
+include(cmake/CodeCoverageReportConfig.cmake)
+generate_coverage_report(TARGETS server server_lib config_parser_lib TESTS server_test config_parser_test request_parser_test reply_test request_handler_test)
