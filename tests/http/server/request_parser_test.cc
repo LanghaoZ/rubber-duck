@@ -65,7 +65,7 @@ TEST_F(RequestParserTest, LackSlashN) {
   EXPECT_TRUE(success);
 }
 
-TEST_F(RequestParserTest, DOUBLEREQUEST) {
+TEST_F(RequestParserTest, DoubleRequest) {
 
   // the second request will be treated as request body
   char input[1024] = "GET / HTTP/1.1\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\nGET / HTTP/1.1\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\n";
@@ -74,8 +74,35 @@ TEST_F(RequestParserTest, DOUBLEREQUEST) {
   EXPECT_TRUE(success);
 }
 
+TEST_F(RequestParserTest, MinorErrorinProtocal) {
+	
+  //add small error to HTTP to see if it can be detected, owner: lzy
+  char input[1024] = "GET / HTTTP/1.1\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\n";
+  std::tie(result, std::ignore)  = parser.parse(req, input, input + strlen(input));
+  bool success = result == http::server::request_parser::bad;
+  EXPECT_TRUE(success);
+}
 
-TEST_F(RequestParserTest, TESTNOEND) {
+TEST_F(RequestParserTest, ErrBeforeClose) {
+
+  // add /n before close, owner: lzy
+  char input[1024] = "GET / HTTP/1.1\r\nHost: www.rubberduck.com\r\nConnection: \nclose\r\n\r\n";
+  std::tie(result, std::ignore)  = parser.parse(req, input, input + strlen(input));
+  bool success = result == http::server::request_parser::bad;
+  EXPECT_TRUE(success);
+}
+
+TEST_F(RequestParserTest, OneMoreNBeforeProtocal) {
+
+  //add \n before host one more time, owner: lzy
+  char input[1024] = "GET / HTTP/1.1\r\n\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\n";
+  std::tie(result, std::ignore)  = parser.parse(req, input, input + strlen(input));
+  bool success = result == http::server::request_parser::bad;
+  EXPECT_TRUE(success);
+}
+
+
+TEST_F(RequestParserTest, TestNoEnd) {
 
   //Without end should be not complete
   char input[1024] = "GET / HTTP/1.1\r\nHost: www.rubberduck.com\r\nConnection: close";
