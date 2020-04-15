@@ -48,3 +48,17 @@ TEST_F(RequestHandlerTest, AssignsRequestContentToResponseBody)
 
   EXPECT_EQ(rep_.content, expected);
 }
+
+TEST_F(RequestHandlerTest, ReadRequestBody) {
+  http::server::request req;
+  req.headers.resize(1);
+  req.headers[0].name = "Content-Length";
+  req.headers[0].value = "11";
+
+  std::string extra_data_read = "hello ";
+  handler_.read_request_body(req, extra_data_read, [](size_t length) {
+    return "world";
+  });
+
+  EXPECT_EQ(req.body, "hello world");
+}
