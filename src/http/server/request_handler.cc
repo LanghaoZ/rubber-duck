@@ -21,6 +21,19 @@ request_handler::request_handler()
 {
 }
 
+void request_handler::read_request_body(request& req, const std::string& extra_data_read, 
+  std::function<std::string (size_t length)> reader)
+{
+  size_t content_length_left = req.get_content_length() - extra_data_read.size();
+  std::string addtional_data = "";
+  // read rest of the request body
+  if (content_length_left > 0) 
+  {
+    addtional_data += reader(content_length_left);
+  }
+  req.body = extra_data_read + addtional_data;
+}
+
 void request_handler::handle_request(const request& req, reply& rep)
 {
 

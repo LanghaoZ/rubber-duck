@@ -26,42 +26,6 @@ void request_parser::reset()
   state_ = method_start;
 }
 
-void request_parser::read_request_body(
-  request& req, 
-  boost::asio::ip::tcp::socket& socket, 
-  const std::string& addtional_data_read)
-{
-
-  std::string body = addtional_data_read;
-
-  // check header to tell whether there exists request body
-  int contentLength = 0;
-  for (int i = 0; i < req.headers.size(); i++) 
-  {
-    if (req.headers[i].name.compare(
-      header::field_name_type_as_string(header::content_length)) == 0) 
-    {
-      contentLength = std::stoi(req.headers[i].value);
-    }
-  }
-
-  // update size of addtional data to read
-  if (contentLength > 0) 
-  {
-    contentLength -= addtional_data_read.size();
-  }
-
-  // read rest of the request body
-  if (contentLength > 0) {
-    char* data = new char[contentLength];
-    size_t length = socket.read_some(boost::asio::buffer(data, contentLength));
-    body += std::string(data, data + length);
-  }
-
-  req.body = body;
-
-}
-
 request_parser::result_type request_parser::consume(request& req, char input)
 {
   switch (state_)

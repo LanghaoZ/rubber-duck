@@ -1,3 +1,4 @@
+#include <boost/asio.hpp>
 #include "gtest/gtest.h"
 #include "http/server/request_parser.h"
 #include "http/server/request.h"

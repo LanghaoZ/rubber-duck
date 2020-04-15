@@ -48,7 +48,7 @@ void session::do_read()
           {
             // buffer may contain more data beyond end of request header
             // read more data from socket if necessary
-            request_parser_.read_request_body(request_, socket_, std::string(start, end - start));
+            read_leftover(std::string(start, end - start));
 
             request_handler_.handle_request(request_, reply_);
             do_write();
@@ -81,6 +81,20 @@ void session::do_write()
           ignored_ec);
       }
 
+    });
+}
+
+void session::read_leftover(const std::string& extra_data_read)
+{
+  auto self(shared_from_this());
+  request_handler_.read_request_body(request_, extra_data_read,
+    [this, self](size_t content_length_left)
+    {
+      char* data = new char[content_length_left];
+      size_t length = socket_.read_some(boost::asio::buffer(data, content_length_left));
+      std::string addtional_data = std::string(data, data + length);
+      delete data;
+      return addtional_data;
     });
 }
 

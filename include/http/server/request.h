@@ -27,6 +27,7 @@ struct request
   int http_version_minor;
   std::vector<header> headers;
   std::string body;
+  size_t get_content_length();
 };
 
 } // namespace server

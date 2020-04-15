@@ -34,6 +34,9 @@ private:
   /// Perform an asynchronous write operation.
   void do_write();
 
+  /// Read rest of the data from socket before closing it
+  void read_leftover(const std::string& extra_data_read);
+
   /// Socket for the connection.
   boost::asio::ip::tcp::socket socket_;
 

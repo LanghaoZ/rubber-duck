@@ -36,7 +36,7 @@ message(STATUS "Boost version: ${Boost_VERSION}")
 include_directories(include)
 
 # create libraries
-add_library(server_lib src/http/server/server.cc src/http/server/session.cc src/http/server/request_parser.cc src/http/server/header.cc src/http/server/reply.cc src/http/server/request_handler.cc)
+add_library(server_lib src/http/server/server.cc src/http/server/session.cc src/http/server/request_parser.cc src/http/server/header.cc src/http/server/request.cc src/http/server/reply.cc src/http/server/request_handler.cc)
 add_library(config_parser_lib src/nginx/config_parser.cc src/nginx/config.cc src/nginx/config_statement.cc)
 
 # create executable of the server program
