@@ -35,7 +35,8 @@ struct header
   // possible field values of request/response header
   enum field_value_type
   {
-    text_plain
+    text_plain,
+    text_html
   };
   static const char* field_value_type_as_string(field_value_type type);
 

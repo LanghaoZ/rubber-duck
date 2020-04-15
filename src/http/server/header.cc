@@ -21,6 +21,7 @@ const char* header::field_value_type_as_string(field_value_type type)
 {
   switch (type) {
     case text_plain: return "text/plain";
+    case text_html:  return "text/html";
     default:         return "unknown header field value type";
   }
 }

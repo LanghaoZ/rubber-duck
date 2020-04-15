@@ -35,19 +35,17 @@ void request_handler::handle_request(const request& req, reply& rep)
 
   // set response content
   rep.content = "";
+
   rep.content += req.method;
   rep.content += " ";
+
   rep.content += req.uri;
   rep.content += " ";
 
-  if (req.http_version_minor == 0) 
-  {
-    rep.content += "HTTP/1.0";
-  }
-  else if (req.http_version_minor == 1)
-  {
-    rep.content += "HTTP/1.1";
-  }
+  rep.content += "HTTP/";
+  rep.content += std::to_string(req.http_version_major);
+  rep.content += ".";
+  rep.content += std::to_string(req.http_version_minor);
 
   rep.content += "\r\n";
 
@@ -57,6 +55,7 @@ void request_handler::handle_request(const request& req, reply& rep)
     rep.content += req.headers[i].value;
     rep.content += "\r\n";
   }
+
   rep.content += "\r\n";
 
   rep.content += req.body;
