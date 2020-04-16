@@ -32,6 +32,9 @@ set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.50 REQUIRED COMPONENTS system thread)
 message(STATUS "Boost version: ${Boost_VERSION}")
 
+# Enable bash
+find_program(BASH_PROGRAM bash)
+
 # include .h files
 include_directories(include)
 
@@ -64,6 +67,11 @@ gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURC
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(header_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
+# add integration test
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test_config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test.sh ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_BINARY_DIR}/integration_test.sh)
 
 # Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
