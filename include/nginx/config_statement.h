@@ -13,7 +13,7 @@ class config;
 // The parsed representation of a single config statement.
 class config_statement {
  public:
-  std::string to_string(int depth);
+  virtual std::string to_string(int depth);
   std::vector<std::string> tokens_;
   std::unique_ptr<nginx::config> child_block_;
 };

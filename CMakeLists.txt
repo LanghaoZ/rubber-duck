@@ -59,6 +59,11 @@ add_executable(header_test tests/http/server/header_test.cc)
 target_link_libraries(header_test server_lib gtest_main)
 add_executable(config_parser_test tests/nginx/config_parser_test.cc)
 target_link_libraries(config_parser_test config_parser_lib gtest_main)
+add_executable(config_statement_test tests/nginx/config_statement_test.cc)
+target_link_libraries(config_statement_test config_parser_lib gtest_main gmock_main)
+add_executable(config_test tests/nginx/config_test.cc)
+target_link_libraries(config_test config_parser_lib gtest_main gmock_main)
+
 
 # find google tests
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -67,6 +72,8 @@ gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURC
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(header_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(config_statement_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(config_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # add integration test
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test_config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
@@ -75,4 +82,4 @@ add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_BINARY_DI
 
 # Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server server_lib config_parser_lib TESTS server_test config_parser_test request_parser_test reply_test request_handler_test header_test)
+generate_coverage_report(TARGETS server server_lib config_parser_lib TESTS server_test config_parser_test request_parser_test reply_test request_handler_test header_test config_statement_test config_test)

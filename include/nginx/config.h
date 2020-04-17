@@ -16,7 +16,7 @@ const std::string config_port = "port";
 // The parsed representation of the entire config.
 class config {
   public:
-    std::string to_string(int depth = 0);
+    virtual std::string to_string(int depth = 0);
     std::vector<std::shared_ptr<nginx::config_statement>> statements_;
     int get_port();
 };
