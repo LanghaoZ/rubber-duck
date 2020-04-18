@@ -1,3 +1,4 @@
+#include <boost/asio.hpp>
 #include "gtest/gtest.h"
 #include "http/server/reply.h"
 
@@ -191,4 +192,135 @@ TEST_F(ReplyTest, HandlesServiceUnavailableResponse) {
   EXPECT_EQ(reply.headers[0].value, std::to_string(reply.content.size()));
   EXPECT_EQ(reply.headers[1].name, content_type);
   EXPECT_EQ(reply.headers[1].value, text_html);
+}
+
+TEST_F(ReplyTest, HandlesConvertingOkReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::ok;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 200 OK\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingCreatedReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::created;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 201 Created\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingAcceptedReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::accepted;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 202 Accepted\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingNoContentReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::no_content;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 204 No Content\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingMultipleChoicesReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::multiple_choices;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 300 Multiple Choices\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingMovedPermanentlyReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::moved_permanently;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 301 Moved Permanently\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingMovedTemporarilyReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::moved_temporarily;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 302 Moved Temporarily\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingNotModifiedReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::not_modified;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 304 Not Modified\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingBadRequestReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::bad_request;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 400 Bad Request\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingUnauthorizedReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::unauthorized;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 401 Unauthorized\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingForbiddenReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::forbidden;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 403 Forbidden\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingNotFoundReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::not_found;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 404 Not Found\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingInternalServerErrorReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::internal_server_error;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 500 Internal Server Error\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingNotImplementedReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::not_implemented;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 501 Not Implemented\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingBadGatewayReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::bad_gateway;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 502 Bad Gateway\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingServiceUnavailableReplyToBuffer) {
+  http::server::reply reply;
+  reply.status = http::server::reply::service_unavailable;
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 503 Service Unavailable\r\n");
+}
+
+TEST_F(ReplyTest, HandlesConvertingReplyToBuffers) {
+  http::server::reply reply;
+  reply.status = http::server::reply::ok;
+  reply.headers.resize(1);
+  reply.headers[0].name = "foo";
+  reply.headers[0].value = "bar";
+
+  std::vector<boost::asio::const_buffer> buffers = reply.to_buffers();
+  
+  EXPECT_EQ(buffers.size(), 7);
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[0]), boost::asio::buffer_size(buffers[0])), "HTTP/1.1 200 OK\r\n");
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[1]), boost::asio::buffer_size(buffers[1])), "foo");
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[2]), boost::asio::buffer_size(buffers[2])), ": ");
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[3]), boost::asio::buffer_size(buffers[3])), "bar");
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[4]), boost::asio::buffer_size(buffers[4])), "\r\n");
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[5]), boost::asio::buffer_size(buffers[5])), "\r\n");
+  EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[6]), boost::asio::buffer_size(buffers[6])), "");
 }
