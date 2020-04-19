@@ -31,40 +31,50 @@ void session::do_read()
 {
   auto self(shared_from_this());
   // asynchronously read some data from socket and store it into buffer
-  socket_.async_read_some(boost::asio::buffer(buffer_),
-    // handler to be called when the read operation completes
-    [this, self](boost::system::error_code ec, std::size_t bytes_transferred)
-      {
-        if (!ec)
-        {
-          char* start = buffer_.data();
-          char* end = buffer_.data() + bytes_transferred;
-          http::server::request_parser::result_type result;
+  socket_.async_read_some(boost::asio::buffer(buffer_), 
+    boost::bind(&session::handle_read, shared_from_this(),
+      boost::asio::placeholders::error,
+      boost::asio::placeholders::bytes_transferred));
+}
 
-          std::tie(result, start) = request_parser_.parse(
-            request_, start, end);
-          
-          if (result == http::server::request_parser::good)
-          {
-            // buffer may contain more data beyond end of request header
-            // read more data from socket if necessary
-            read_leftover(std::string(start, end - start));
+int session::handle_read(const boost::system::error_code& ec,
+    std::size_t bytes_transferred)
+{
+  auto self(shared_from_this());
+  if (!ec)
+  {
+    char* start = buffer_.data();
+    char* end = buffer_.data() + bytes_transferred;
+    http::server::request_parser::result_type result;
 
-            request_handler_.handle_request(request_, reply_);
-            do_write();
-          }
-          else if (result == http::server::request_parser::bad)
-          {
-            // respond with 400 status
-            reply_ = http::server::reply::stock_reply(http::server::reply::bad_request);
-            do_write();
-          }
-          else
-          {
-            do_read();
-          }
-        }
-      });
+    std::tie(result, start) = request_parser_.parse(
+      request_, start, end);
+    
+    if (result == http::server::request_parser::good)
+    {
+      // buffer may contain more data beyond end of request header
+      // read more data from socket if necessary
+      read_leftover(std::string(start, end - start));
+
+      request_handler_.handle_request(request_, reply_);
+      do_write();
+      return 0;
+    }
+    else if (result == http::server::request_parser::bad)
+    {
+      // respond with 400 status
+      reply_ = http::server::reply::stock_reply(http::server::reply::bad_request);
+      do_write();
+      return 1;
+    }
+    else
+    {
+      do_read();
+      return 0;
+    }
+  }
+
+  return 1;
 }
 
 void session::do_write()
@@ -96,6 +106,11 @@ void session::read_leftover(const std::string& extra_data_read)
       delete data;
       return addtional_data;
     });
+}
+
+void session::set_buffer(boost::array<char, 8192>& buffer)
+{
+  buffer_ = buffer;
 }
 
 } // namespace server

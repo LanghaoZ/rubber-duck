@@ -48,7 +48,9 @@ target_link_libraries(server server_lib config_parser_lib Boost::system)
 
 # add executables for tests
 add_executable(server_test tests/http/server/server_test.cc)
-target_link_libraries(server_test server_lib Boost::system gtest_main)
+target_link_libraries(server_test server_lib Boost::system Boost::thread gtest_main)
+add_executable(session_test tests/http/server/session_test.cc)
+target_link_libraries(session_test server_lib Boost::system gtest_main)
 add_executable(request_parser_test tests/http/server/request_parser_test.cc)
 target_link_libraries(request_parser_test server_lib gtest_main Boost::system)
 add_executable(reply_test tests/http/server/reply_test.cc)
@@ -67,6 +69,7 @@ target_link_libraries(config_test config_parser_lib gtest_main gmock_main)
 
 # find google tests
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -82,4 +85,4 @@ add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_BINARY_DI
 
 # Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server server_lib config_parser_lib TESTS server_test config_parser_test request_parser_test reply_test request_handler_test header_test config_statement_test config_test)
+generate_coverage_report(TARGETS server server_lib config_parser_lib TESTS server_test session_test config_parser_test request_parser_test reply_test request_handler_test header_test config_test config_statement_test)

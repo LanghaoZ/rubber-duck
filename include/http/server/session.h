@@ -3,6 +3,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <boost/array.hpp>
 #include "request.h"
 #include "request_parser.h"
 #include "reply.h"
@@ -27,6 +28,12 @@ public:
   /// Start the first asynchronous operation for the connection.
   void start();
 
+  void set_buffer(boost::array<char, 8192>& buffer);
+
+  /// handler to be called when the read operation completes
+  int handle_read(const boost::system::error_code& ec,
+    std::size_t bytes_transferred);
+
 private:
   /// Perform an asynchronous read operation.
   void do_read();
@@ -44,7 +51,7 @@ private:
   request_handler& request_handler_;
 
   /// Buffer for incoming data.
-  std::array<char, 8192> buffer_;
+  boost::array<char, 8192> buffer_;
 
   /// The incoming request.
   request request_;
