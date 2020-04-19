@@ -27,7 +27,7 @@ steps:
   args: [
     'build',
     '-f', 'docker/coverage.Dockerfile',
-    '-t', 'gcr.io/$PROJECT_ID/rubber-duck:latest',
+    '-t', 'gcr.io/$PROJECT_ID/rubber-duck:coverage',
     '.'
   ]
-images: ['gcr.io/$PROJECT_ID/rubber-duck:base', 'gcr.io/$PROJECT_ID/rubber-duck:latest']
+images: ['gcr.io/$PROJECT_ID/rubber-duck:base', 'gcr.io/$PROJECT_ID/rubber-duck:coverage','gcr.io/$PROJECT_ID/rubber-duck:latest']
