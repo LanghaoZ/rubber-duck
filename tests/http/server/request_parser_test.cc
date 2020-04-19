@@ -110,3 +110,31 @@ TEST_F(RequestParserTest, TestNoEnd) {
   bool success = result == http::server::request_parser::indeterminate;
   EXPECT_TRUE(success);
 }
+
+TEST_F(RequestParserTest, LargeHTTPMajorVersion) {
+  char input[1024] = "GET / HTTP/10.1\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\n";
+  std::tie(result, std::ignore) = parser.parse(req, input, input + strlen(input));
+  bool success = result == http::server::request_parser::good;
+  EXPECT_TRUE(success);
+}
+
+TEST_F(RequestParserTest, LargeHTTPMinorVersion) {
+  char input[1024] = "GET / HTTP/1.10\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\n";
+  std::tie(result, std::ignore) = parser.parse(req, input, input + strlen(input));
+  bool success = result == http::server::request_parser::good;
+  EXPECT_TRUE(success);
+}
+
+TEST_F(RequestParserTest, HeaderFieldNameHasEmptySpace) {
+  char input[1024] = "GET / HTTP/1.1\r\nHos t: www.rubberduck.com\r\nConnection: close\r\n\r\n";
+  std::tie(result, std::ignore) = parser.parse(req, input, input + strlen(input));
+  bool success = result == http::server::request_parser::bad;
+  EXPECT_TRUE(success);
+}
+
+TEST_F(RequestParserTest, HasRequestBody) {
+  char input[1024] = "POST / HTTP/1.1\r\nHost: www.rubberduck.com\r\nConnection: close\r\n\r\n{\"hello\": \"world\"}";
+  std::tie(result, std::ignore) = parser.parse(req, input, input + strlen(input));
+  bool success = result == http::server::request_parser::good;
+  EXPECT_TRUE(success);
+}

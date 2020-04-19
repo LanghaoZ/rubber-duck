@@ -55,6 +55,11 @@ TEST_F(NginxConfigParserTest, NoTokenConfig) {
 	EXPECT_FALSE(success);
 }
 
+TEST_F(NginxConfigParserTest, SampleNginxConfig) {
+	bool success = parser.parse("nginx/configs/nginx_config", &out_config);
+	EXPECT_TRUE(success);
+}
+
 TEST_F(NginxConfigParserTest, GetPortFromNull) {
     bool success = parser.parse("nginx/configs/empty_config", &out_config);
     int port = out_config.get_port();

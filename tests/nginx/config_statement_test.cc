@@ -33,5 +33,15 @@ TEST(ConfigStatementTest, SerializesTokensWithChildBlock) {
   delete mock_config;
 }
 
+TEST(ConfigStatementTest, SerializesTokensWithOneIndentation) {
+
+  nginx::config_statement statement;
+
+  statement.tokens_.push_back("foo");
+  statement.tokens_.push_back("bar");
+  statement.tokens_.push_back("foobar");
+  EXPECT_EQ(statement.to_string(1), "  foo bar foobar;\n");
+}
+
 
 
