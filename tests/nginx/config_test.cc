@@ -11,6 +11,12 @@ public:
   MOCK_METHOD1(to_string, std::string(int));
 };
 
+TEST(ConfigTest, EmptyConfigTest){
+	nginx::config * config = new nginx::config;
+	EXPECT_EQ(config->to_string(0), "");
+	delete config;
+}
+
 TEST(ConfigTest, ToStringTest){
 	nginx::config * config = new nginx::config;
 	MockConfigStatment * mock_config_statment = new MockConfigStatment;

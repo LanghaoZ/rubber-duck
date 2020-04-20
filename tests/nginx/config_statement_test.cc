@@ -10,6 +10,11 @@ public:
   MOCK_METHOD1(to_string, std::string(int));
 };
 
+TEST(ConfigStatementTest, EmptyTokensTest) {
+
+  nginx::config_statement statement;
+  EXPECT_EQ(statement.to_string(0), ";\n");
+}
 
 TEST(ConfigStatementTest, SerializesTokensWithoutChildBlock) {
 
