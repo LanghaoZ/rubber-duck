@@ -28,6 +28,11 @@ TEST(ServerTest, ServerReadsDataFromClient) {
     // run the server in a different thread
     boost::thread s(&server_thread);
 
+    // wait for one second for the server to start up
+    // otherwise, client will try to connect to the server
+    // that doesn't exist.
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
+
     // client
     // https://www.boost.org/doc/libs/1_42_0/doc/html/boost_asio/example/http/client/sync_client.cpp  
     // connect to the server
