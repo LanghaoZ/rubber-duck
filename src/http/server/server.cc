@@ -14,6 +14,7 @@
 #include "http/server/server.h"
 #include "http/server/session.h"
 #include "http/server/request_handler.h"
+#include "logging/logs.h"
 
 using boost::asio::ip::tcp;
 
@@ -77,17 +78,12 @@ void server::do_await_stop()
   signals_.async_wait(
     [this](boost::system::error_code /*ec*/, int /*signo*/)
     {
-
-      std::cout << "Received termination signal" << std::endl;
-      std::cout << "Cancelling all outstanding asynchronous operations..." << std::endl;
-
       // The server is stopped by cancelling all outstanding asynchronous
       // operations. Once all operations have finished the io_service::run()
       // call will exit.
       acceptor_.close();
       session_manager_.stop_all();
-      
-      std::cout << "Shutting down the server" << std::endl;
+      Logs::log_signal();
     });
 }
 

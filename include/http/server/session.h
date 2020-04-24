@@ -10,6 +10,7 @@
 #include "reply.h"
 #include "header.h"
 #include "request_handler.h"
+#include "logging/logs.h"
 
 using boost::asio::ip::tcp;
 

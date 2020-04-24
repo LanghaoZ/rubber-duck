@@ -10,6 +10,7 @@
 #include "http/server/reply.h"
 #include "http/server/request_handler.h"
 #include "http/server/session_manager.h"
+#include "logging/logs.h"
 
 using boost::asio::ip::tcp;
 
@@ -59,6 +60,8 @@ int session::handle_read(const boost::system::error_code& ec,
 
     std::tie(result, start) = request_parser_.parse(
       request_, start, end);
+
+    Logs::log_request(request_, socket_);
     
     if (result == http::server::request_parser::good)
     {

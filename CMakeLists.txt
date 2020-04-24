@@ -29,7 +29,9 @@ add_subdirectory(/usr/src/googletest googletest)
 # Enable Boost
 # Use static libraries so binaries can be deployed without a full boost install
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.50 REQUIRED COMPONENTS system thread log regex)
+
+find_package(Boost 1.50 REQUIRED COMPONENTS system thread regex log)
+
 message(STATUS "Boost version: ${Boost_VERSION}")
 
 # Enable bash
@@ -41,30 +43,31 @@ include_directories(include)
 # create libraries
 add_library(server_lib src/http/server/server.cc src/http/server/session.cc src/http/server/request_parser.cc src/http/server/header.cc src/http/server/request.cc src/http/server/reply.cc src/http/server/request_handler.cc src/http/server/session_manager.cc src/http/server/request_handler_factory.cc src/http/server/static_request_handler.cc src/http/server/echo_request_handler.cc src/http/server/mime_types.cc)
 add_library(config_parser_lib src/nginx/config_parser.cc src/nginx/config.cc src/nginx/config_statement.cc)
+add_library(log_lib src/logging/logs.cc)
 
 # create executable of the server program
 add_executable(server src/http/server/server_main.cc)
-target_link_libraries(server server_lib config_parser_lib Boost::system Boost::regex Boost::log_setup Boost::log)
+target_link_libraries(server server_lib config_parser_lib log_lib Boost::system Boost::regex Boost::log_setup Boost::log)
 
 # add executables for tests
 add_executable(server_test tests/http/server/server_test.cc)
-target_link_libraries(server_test server_lib Boost::system Boost::thread Boost::regex Boost::log_setup Boost::log gtest_main)
+target_link_libraries(server_test server_lib log_lib Boost::system Boost::thread Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(session_test tests/http/server/session_test.cc)
-target_link_libraries(session_test server_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
+target_link_libraries(session_test server_lib log_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(request_parser_test tests/http/server/request_parser_test.cc)
-target_link_libraries(request_parser_test server_lib gtest_main Boost::system)
+target_link_libraries(request_parser_test server_lib log_lib gtest_main Boost::system)
 add_executable(reply_test tests/http/server/reply_test.cc)
-target_link_libraries(reply_test server_lib gtest_main Boost::system)
+target_link_libraries(reply_test server_lib log_lib gtest_main Boost::system)
 add_executable(request_handler_test tests/http/server/request_handler_test.cc)
-target_link_libraries(request_handler_test server_lib gtest_main Boost::system)
+target_link_libraries(request_handler_test server_lib log_lib gtest_main Boost::system)
 add_executable(header_test tests/http/server/header_test.cc)
-target_link_libraries(header_test server_lib gtest_main)
+target_link_libraries(header_test server_lib log_lib gtest_main)
 add_executable(config_parser_test tests/nginx/config_parser_test.cc)
-target_link_libraries(config_parser_test config_parser_lib gtest_main)
+target_link_libraries(config_parser_test config_parser_lib log_lib gtest_main)
 add_executable(config_statement_test tests/nginx/config_statement_test.cc)
-target_link_libraries(config_statement_test config_parser_lib gtest_main gmock_main)
+target_link_libraries(config_statement_test config_parser_lib log_lib gtest_main gmock_main)
 add_executable(config_test tests/nginx/config_test.cc)
-target_link_libraries(config_test config_parser_lib gtest_main gmock_main)
+target_link_libraries(config_test config_parser_lib log_lib gtest_main gmock_main)
 
 
 # find google tests

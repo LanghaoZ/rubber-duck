@@ -9,6 +9,7 @@
 //
 
 #include <iostream>
+#include <csignal>
 #include <boost/asio.hpp>
 #include "http/server/server.h"
 #include "http/server/session.h"
@@ -17,6 +18,7 @@
 #include "nginx/config_parser.h"
 #include "nginx/config.h"
 #include "nginx/config_statement.h"
+#include "logging/logs.h"
 
 using boost::asio::ip::tcp;
 
@@ -31,7 +33,6 @@ int main(int argc, char* argv[])
       std::cout << "Usage: server <nginx_config_file>" << std::endl;
       return 1;
     }
-
     // parse nginx file to get port number
     nginx::config_parser parser;
     nginx::config config;
@@ -56,10 +57,11 @@ int main(int argc, char* argv[])
     // create request handlers
     std::vector<std::shared_ptr<http::server::request_handler>> request_handlers = http::server::request_handler_factory::create_request_handlers(config);
 
+    Logs::init();
+
     // run the server
     http::server::server s(port, request_handlers);
-
-    std::cout << "Server started on port " << std::to_string(port) << std::endl;
+    Logs::log_trace("Server started on port " + std::to_string(port));
 
     s.run();
     
