@@ -14,7 +14,7 @@ RUN ctest --output-on_failure
 
 ### Deploy container ###
 # Define deploy stage
-FROM ubuntu:latest as deploy
+FROM ubuntu:bionic as deploy
 
 COPY --from=builder /usr/src/project/build/bin/server .
 COPY --from=builder /usr/src/project/conftst/rubber-duck.conf .
