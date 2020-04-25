@@ -12,6 +12,8 @@
 #include <boost/asio.hpp>
 #include "http/server/server.h"
 #include "http/server/session.h"
+#include "http/server/request_handler_factory.h"
+#include "http/server/request_handler.h"
 #include "nginx/config_parser.h"
 #include "nginx/config.h"
 #include "nginx/config_statement.h"
@@ -22,36 +24,49 @@ int main(int argc, char* argv[])
 {
   try
   {
+
     // argument check
     if (argc != 2)
     {
-      std::cerr << "Usage: server <nginx_config_file>\n";
+      std::cout << "Usage: server <nginx_config_file>" << std::endl;
       return 1;
     }
 
     // parse nginx file to get port number
     nginx::config_parser parser;
     nginx::config config;
-    parser.parse(argv[1], &config);
+    bool success = parser.parse(argv[1], &config);
+
+    if (success)
+    {
+      std::cout << "Successfully parsed nginx config: " << std::string(argv[1]) << std::endl;
+    }
+    else
+    {
+      std::cout << "Failed to parse nginx config: " << std::string(argv[1]) << std::endl;
+    }
 
     int port = config.get_port();
     if (port == nginx::err_not_found) 
     {
-      std::cerr << "port not found from " << argv[1] << "\n";
+      std::cout << "Failed to find the port from " << std::string(argv[1]) << std::endl;
       return 1;
     }
 
-    // run the server
-    http::server::server s(port);
+    // create request handlers
+    std::vector<std::shared_ptr<http::server::request_handler>> request_handlers = http::server::request_handler_factory::create_request_handlers(config);
 
-    std::cerr << "Server started on port " << port << std::endl;
+    // run the server
+    http::server::server s(port, request_handlers);
+
+    std::cout << "Server started on port " << std::to_string(port) << std::endl;
 
     s.run();
     
   }
   catch (std::exception& e)
   {
-    std::cerr << "Exception: " << e.what() << "\n";
+    std::cout << "Exception: " << std::string(e.what()) << std::endl;
   }
 
   return 0;

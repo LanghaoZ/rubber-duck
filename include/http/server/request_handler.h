@@ -12,6 +12,7 @@
 #define HTTP_REQUEST_HANDLER_H
 
 #include <string>
+#include <functional>
 
 namespace http {
 namespace server {
@@ -23,16 +24,16 @@ struct request;
 class request_handler
 {
 public:
-  request_handler(const request_handler&) = delete;
-  request_handler& operator=(const request_handler&) = delete;
 
-  void read_request_body(request& req, const std::string& extra_data_read, 
-    std::function<std::string (size_t length)> reader);
+  request_handler(std::string& target_base_url);
 
-  explicit request_handler();
+  bool can_handle(std::string& url);
 
   /// Handle a request and produce a reply.
-  void handle_request(const request& req, reply& rep);
+  virtual void handle_request(const request& req, reply& rep) = 0;
+
+  // url base path to handle
+  std::string target_base_url;
 
 };
 

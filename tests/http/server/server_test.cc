@@ -1,18 +1,22 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
+#include <unordered_map> 
 #include "gtest/gtest.h"
 #include "http/server/server.h"
+#include "http/server/request_handler.h"
 
 void server_thread()
 {
-  http::server::server s(8080);
+  std::vector<std::shared_ptr<http::server::request_handler>> map;
+  http::server::server s(8080, map);
   s.run();
 }
 
 TEST(ServerTest, ServerConstructsSuccessfully) {
+  std::vector<std::shared_ptr<http::server::request_handler>> map;
   try 
   {
-    http::server::server s(8080);
+    http::server::server s(8080, map);
   }
   catch (std::exception& e)
   {
@@ -23,6 +27,7 @@ TEST(ServerTest, ServerConstructsSuccessfully) {
 }
 
 TEST(ServerTest, ServerReadsDataFromClient) {
+  
 
   try {
     // run the server in a different thread

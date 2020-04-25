@@ -8,6 +8,7 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
+#include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "http/server/server.h"
@@ -19,12 +20,26 @@ using boost::asio::ip::tcp;
 namespace http {
 namespace server {
 
-server::server(short port)
+server::server(short port, std::vector<std::shared_ptr<request_handler>>& request_handlers)
   : io_service_(),
+    signals_(io_service_),
     socket_(io_service_),
     acceptor_(io_service_, tcp::endpoint(tcp::v4(), port)),
-    request_handler_()
+    session_manager_(),
+    request_handlers_(request_handlers)
 {
+
+  // Register to handle the signals that indicate when the server should exit.
+  // It is safe to register for the same signal multiple times in a program,
+  // provided all registration for the specified signal is made through Asio.
+  signals_.add(SIGINT);
+  signals_.add(SIGTERM);
+  #if defined(SIGQUIT)
+  signals_.add(SIGQUIT);
+  #endif // defined(SIGQUIT)
+
+  do_await_stop();
+
   do_accept();
 }
 
@@ -38,13 +53,42 @@ void server::do_accept()
   acceptor_.async_accept(socket_,
     [this](boost::system::error_code ec)
   {
+
+    // Check whether the server was stopped by a signal before this
+    // completion handler had a chance to run.
+    if (!acceptor_.is_open())
+    {
+      return;
+    }
+
     if (!ec)
     {
-      std::make_shared<session>(std::move(socket_), request_handler_)->start();
+      session_manager_.start(std::make_shared<session>(
+        std::move(socket_), session_manager_, request_handlers_));
+      
     }
 
     do_accept();
   });
+}
+
+void server::do_await_stop()
+{
+  signals_.async_wait(
+    [this](boost::system::error_code /*ec*/, int /*signo*/)
+    {
+
+      std::cout << "Received termination signal" << std::endl;
+      std::cout << "Cancelling all outstanding asynchronous operations..." << std::endl;
+
+      // The server is stopped by cancelling all outstanding asynchronous
+      // operations. Once all operations have finished the io_service::run()
+      // call will exit.
+      acceptor_.close();
+      session_manager_.stop_all();
+      
+      std::cout << "Shutting down the server" << std::endl;
+    });
 }
 
 } // namespace server

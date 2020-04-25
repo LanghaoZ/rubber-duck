@@ -28,6 +28,7 @@ struct request
   std::vector<header> headers;
   std::string body;
   size_t get_content_length();
+  std::string to_string() const;
 };
 
 } // namespace server

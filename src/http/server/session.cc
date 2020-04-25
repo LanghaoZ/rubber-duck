@@ -9,6 +9,7 @@
 #include "http/server/request_parser.h"
 #include "http/server/reply.h"
 #include "http/server/request_handler.h"
+#include "http/server/session_manager.h"
 
 using boost::asio::ip::tcp;
 
@@ -16,15 +17,24 @@ namespace http {
 namespace server {
 
 session::session(boost::asio::ip::tcp::socket socket,
-  request_handler& handler)
+  session_manager& manager,
+  std::vector<std::shared_ptr<request_handler>>& request_handlers)
   : socket_(std::move(socket)),
-    request_handler_(handler)
+    session_manager_(manager),
+    request_handlers_(request_handlers)
 {
 }
 
 void session::start()
 {
+  std::cout << "Started a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
   do_read();
+}
+
+void session::stop()
+{
+  std::cout << "Stopped a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
+  socket_.close();
 }
 
 void session::do_read()
@@ -56,12 +66,27 @@ int session::handle_read(const boost::system::error_code& ec,
       // read more data from socket if necessary
       read_leftover(std::string(start, end - start));
 
-      request_handler_.handle_request(request_, reply_);
+      std::cout << "Received a good HTTP request from " << socket_.remote_endpoint().address().to_string() << std::endl;
+      std::cout << "Message received from " << socket_.remote_endpoint().address().to_string() << ": \n" << request_.to_string() << std::endl;
+
+      std::shared_ptr<request_handler> request_handler;
+      if (find_request_handler(request_handler))
+      {
+        request_handler.get()->handle_request(request_, reply_);
+      }
+      else {
+        // no request handler can handle the uri
+        reply_ = http::server::reply::stock_reply(http::server::reply::not_found);
+      }
+
       do_write();
       return 0;
     }
     else if (result == http::server::request_parser::bad)
     {
+      std::cout << "Received a bad HTTP request from " << socket_.remote_endpoint().address().to_string() << std::endl;
+      std::cout << "Message received from " << socket_.remote_endpoint().address().to_string() << ": \n" << request_.to_string() << std::endl;
+
       // respond with 400 status
       reply_ = http::server::reply::stock_reply(http::server::reply::bad_request);
       do_write();
@@ -72,6 +97,10 @@ int session::handle_read(const boost::system::error_code& ec,
       do_read();
       return 0;
     }
+  }
+  else if (ec != boost::asio::error::operation_aborted)
+  {
+    session_manager_.stop(shared_from_this());
   }
 
   return 1;
@@ -91,13 +120,18 @@ void session::do_write()
           ignored_ec);
       }
 
+      if (ec != boost::asio::error::operation_aborted)
+      {
+        session_manager_.stop(shared_from_this());
+      }
+
     });
 }
 
 void session::read_leftover(const std::string& extra_data_read)
 {
   auto self(shared_from_this());
-  request_handler_.read_request_body(request_, extra_data_read,
+  read_request_body(extra_data_read,
     [this, self](size_t content_length_left)
     {
       char* data = new char[content_length_left];
@@ -106,6 +140,32 @@ void session::read_leftover(const std::string& extra_data_read)
       delete data;
       return addtional_data;
     });
+}
+
+void session::read_request_body(const std::string& extra_data_read, 
+  std::function<std::string (size_t length)> reader)
+{
+  size_t content_length_left = request_.get_content_length() - extra_data_read.size();
+  std::string addtional_data = "";
+  // read rest of the request body
+  if (content_length_left > 0) 
+  {
+    addtional_data += reader(content_length_left);
+  }
+  request_.body = extra_data_read + addtional_data;
+}
+
+bool session::find_request_handler(std::shared_ptr<request_handler>& request_handler)
+{
+  for (int i = 0; i < request_handlers_.size(); i++)
+  {
+    if (request_handlers_[i].get()->can_handle(request_.uri))
+    {
+      request_handler = request_handlers_[i];
+      return true;
+    }
+  }
+  return false;
 }
 
 void session::set_buffer(boost::array<char, 8192>& buffer)

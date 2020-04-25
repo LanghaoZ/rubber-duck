@@ -29,7 +29,7 @@ add_subdirectory(/usr/src/googletest googletest)
 # Enable Boost
 # Use static libraries so binaries can be deployed without a full boost install
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.50 REQUIRED COMPONENTS system thread)
+find_package(Boost 1.50 REQUIRED COMPONENTS system thread log regex)
 message(STATUS "Boost version: ${Boost_VERSION}")
 
 # Enable bash
@@ -39,18 +39,18 @@ find_program(BASH_PROGRAM bash)
 include_directories(include)
 
 # create libraries
-add_library(server_lib src/http/server/server.cc src/http/server/session.cc src/http/server/request_parser.cc src/http/server/header.cc src/http/server/request.cc src/http/server/reply.cc src/http/server/request_handler.cc)
+add_library(server_lib src/http/server/server.cc src/http/server/session.cc src/http/server/request_parser.cc src/http/server/header.cc src/http/server/request.cc src/http/server/reply.cc src/http/server/request_handler.cc src/http/server/session_manager.cc src/http/server/request_handler_factory.cc src/http/server/static_request_handler.cc src/http/server/echo_request_handler.cc src/http/server/mime_types.cc)
 add_library(config_parser_lib src/nginx/config_parser.cc src/nginx/config.cc src/nginx/config_statement.cc)
 
 # create executable of the server program
 add_executable(server src/http/server/server_main.cc)
-target_link_libraries(server server_lib config_parser_lib Boost::system)
+target_link_libraries(server server_lib config_parser_lib Boost::system Boost::regex Boost::log_setup Boost::log)
 
 # add executables for tests
 add_executable(server_test tests/http/server/server_test.cc)
-target_link_libraries(server_test server_lib Boost::system Boost::thread gtest_main)
+target_link_libraries(server_test server_lib Boost::system Boost::thread Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(session_test tests/http/server/session_test.cc)
-target_link_libraries(session_test server_lib Boost::system gtest_main)
+target_link_libraries(session_test server_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(request_parser_test tests/http/server/request_parser_test.cc)
 target_link_libraries(request_parser_test server_lib gtest_main Boost::system)
 add_executable(reply_test tests/http/server/reply_test.cc)
@@ -78,10 +78,14 @@ gtest_discover_tests(header_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/t
 gtest_discover_tests(config_statement_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
+
 # add integration test
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test_config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test.sh ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_BINARY_DIR}/integration_test.sh)
+
+# add public directory
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/public DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)

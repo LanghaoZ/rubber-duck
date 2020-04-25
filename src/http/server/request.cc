@@ -19,5 +19,35 @@ size_t request::get_content_length()
   return contentLength;
 }
 
+std::string request::to_string() const
+{
+  std::string res = "";
+  res += method;
+  res += " ";
+
+  res += uri;
+  res += " ";
+
+  res += "HTTP/";
+  res += std::to_string(http_version_major);
+  res += ".";
+  res += std::to_string(http_version_minor);
+
+  res += "\r\n";
+
+  for (int i = 0; i < headers.size(); i++) {
+    res += headers[i].name;
+    res += ": ";
+    res += headers[i].value;
+    res += "\r\n";
+  }
+
+  res += "\r\n";
+
+  res += body;
+
+  return res;
+}
+
 } // namespace server
 } // namespace http
