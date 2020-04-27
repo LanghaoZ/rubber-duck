@@ -10,7 +10,6 @@
 #include "http/server/reply.h"
 #include "http/server/request_handler.h"
 #include "http/server/session_manager.h"
-#include "logging/logs.h"
 
 using boost::asio::ip::tcp;
 
@@ -19,22 +18,26 @@ namespace server {
 
 session::session(boost::asio::ip::tcp::socket socket,
   session_manager& manager,
-  std::vector<std::shared_ptr<request_handler>>& request_handlers)
+  std::vector<std::shared_ptr<request_handler>>& request_handlers,
+  bool logging)
   : socket_(std::move(socket)),
     session_manager_(manager),
-    request_handlers_(request_handlers)
+    request_handlers_(request_handlers),
+    logging_(logging)
 {
 }
 
 void session::start()
 {
-  std::cout << "Started a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
+  if (logging_)
+    std::cout << "Started a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
   do_read();
 }
 
 void session::stop()
 {
-  std::cout << "Stopped a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
+  if (logging_)
+    std::cout << "Stopped a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
   socket_.close();
 }
 
@@ -60,8 +63,6 @@ int session::handle_read(const boost::system::error_code& ec,
 
     std::tie(result, start) = request_parser_.parse(
       request_, start, end);
-
-    Logs::log_request(request_, socket_);
     
     if (result == http::server::request_parser::good)
     {
@@ -69,8 +70,12 @@ int session::handle_read(const boost::system::error_code& ec,
       // read more data from socket if necessary
       read_leftover(std::string(start, end - start));
 
-      std::cout << "Received a good HTTP request from " << socket_.remote_endpoint().address().to_string() << std::endl;
-      std::cout << "Message received from " << socket_.remote_endpoint().address().to_string() << ": \n" << request_.to_string() << std::endl;
+      if (logging_)
+      {
+        std::cout << "Received a good HTTP request from " << socket_.remote_endpoint().address().to_string() << std::endl;
+        std::cout << "Message received from " << socket_.remote_endpoint().address().to_string() << ": \n" + request_.to_string() << std::endl;
+      }
+      
 
       std::shared_ptr<request_handler> request_handler;
       if (find_request_handler(request_handler))
@@ -87,9 +92,12 @@ int session::handle_read(const boost::system::error_code& ec,
     }
     else if (result == http::server::request_parser::bad)
     {
-      std::cout << "Received a bad HTTP request from " << socket_.remote_endpoint().address().to_string() << std::endl;
-      std::cout << "Message received from " << socket_.remote_endpoint().address().to_string() << ": \n" << request_.to_string() << std::endl;
-
+      if (logging_)
+      {
+        std::cout << "Received a bad HTTP request from " << socket_.remote_endpoint().address().to_string() << std::endl;
+        std::cout << "Message received from " << socket_.remote_endpoint().address().to_string() << ": \n" << request_.to_string() << std::endl;
+      } 
+      
       // respond with 400 status
       reply_ = http::server::reply::stock_reply(http::server::reply::bad_request);
       do_write();

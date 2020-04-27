@@ -5,33 +5,18 @@
 #include "http/server/server.h"
 #include "http/server/request_handler.h"
 
-void server_thread()
+void server_8080_thread()
 {
-  std::vector<std::shared_ptr<http::server::request_handler>> map;
-  http::server::server s(8080, map);
+  std::vector<std::shared_ptr<http::server::request_handler>> request_handlers;
+  http::server::server s(8080, request_handlers);
   s.run();
-}
-
-TEST(ServerTest, ServerConstructsSuccessfully) {
-  std::vector<std::shared_ptr<http::server::request_handler>> map;
-  try 
-  {
-    http::server::server s(8080, map);
-  }
-  catch (std::exception& e)
-  {
-    std::cerr << "Exception: " << e.what() << "\n";
-    // the test should fail when there is an exception
-    EXPECT_TRUE(false);
-  }
 }
 
 TEST(ServerTest, ServerReadsDataFromClient) {
   
-
   try {
     // run the server in a different thread
-    boost::thread s(&server_thread);
+    boost::thread s(&server_8080_thread);
 
     // wait for one second for the server to start up
     // otherwise, client will try to connect to the server
@@ -53,6 +38,49 @@ TEST(ServerTest, ServerReadsDataFromClient) {
     
     // Send the request.
     boost::asio::write(c_socket, request);
+
+    // give the server some time to shutdown
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << "Exception: " << e.what() << "\n";
+    // the test should fail when there is an exception
+    EXPECT_TRUE(false);
+  } 
+  
+}
+
+void server_8081_thread()
+{
+  std::vector<std::shared_ptr<http::server::request_handler>> request_handlers;
+  http::server::server s(8081, request_handlers);
+  s.run();
+}
+
+TEST(ServerTest, ServerReceivesSignalAndExits) {
+  
+  try {
+    // run the server in a different thread
+    boost::thread s(&server_8081_thread);
+
+    // wait for one second for the server to start up
+    // otherwise, client will try to connect to the server
+    // that doesn't exist.
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
+
+    // client
+    // https://www.boost.org/doc/libs/1_42_0/doc/html/boost_asio/example/http/client/sync_client.cpp  
+    // connect to the server
+    boost::asio::io_service c_io_service;
+    tcp::socket c_socket(c_io_service);
+    tcp::resolver resolver(c_io_service);
+    boost::asio::connect(c_socket, resolver.resolve({"localhost", "8081"}));
+
+    std::raise(SIGTERM);
+
+    // give the server some time to shutdown
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
   }
   catch (std::exception& e)
   {

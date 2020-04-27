@@ -1,0 +1,25 @@
+port 8080;
+
+server {
+  
+  handler static;
+  
+  location /static1/ {
+    root /usr/src/projects/rubber-duck/public/public1;
+  }
+
+  location /static2/ {
+    root /usr/src/projects/rubber-duck/public/public2;
+  }
+
+}
+
+server {
+  
+  handler echo;
+
+  location /echo/ {
+
+  }
+
+}

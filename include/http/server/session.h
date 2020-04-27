@@ -10,7 +10,6 @@
 #include "reply.h"
 #include "header.h"
 #include "request_handler.h"
-#include "logging/logs.h"
 
 using boost::asio::ip::tcp;
 
@@ -27,13 +26,14 @@ public:
 
   /// Construct a connection with the given socket.
   explicit session(boost::asio::ip::tcp::socket socket, 
-    session_manager& manager, std::vector<std::shared_ptr<request_handler>>& request_handlers);
+    session_manager& manager, std::vector<std::shared_ptr<request_handler>>& request_handlers,
+    bool logging=true);
 
   /// Start the first asynchronous operation for the connection.
-  void start();
+  virtual void start();
 
   /// Stop all asynchronous operations associated with the connection.
-  void stop();
+  virtual void stop();
 
   void set_buffer(boost::array<char, 8192>& buffer);
 
@@ -78,6 +78,9 @@ private:
 
   /// The reply to be sent back to the client.
   reply reply_;
+
+  /// flag for logging
+  bool logging_;
 };
 
 } // namespace server

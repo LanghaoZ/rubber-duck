@@ -17,13 +17,13 @@
 namespace http {
 namespace server {
 
-request_handler::request_handler(std::string& target_base_url)
+request_handler::request_handler(const std::string& target_base_url)
   : target_base_url(target_base_url)
 {
 
 }
 
-bool request_handler::can_handle(std::string& url)
+bool request_handler::can_handle(const std::string& url)
 {
   if (url.find(target_base_url) == 0) 
   {

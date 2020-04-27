@@ -5,7 +5,7 @@
 namespace http {
 namespace server {
 
-echo_request_handler::echo_request_handler(std::string& target_base_url)
+echo_request_handler::echo_request_handler(const std::string& target_base_url)
   : request_handler(target_base_url)
 {
 

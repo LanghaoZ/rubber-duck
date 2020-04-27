@@ -9,7 +9,7 @@ namespace server {
 class echo_request_handler : public request_handler
 {
 public:
-  echo_request_handler(std::string& target_base_url);
+  echo_request_handler(const std::string& target_base_url);
   
   /// Handle a request and produce a reply.
   virtual void handle_request(const request& req, reply& rep);

@@ -1,1 +1,0 @@
-HTTP/1.1 200 OK Content-Type: text/plain Content-Length: 68  GET /echo HTTP/1.1 Host: www.rubber-duck.com Connection: close 

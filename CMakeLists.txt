@@ -68,7 +68,16 @@ add_executable(config_statement_test tests/nginx/config_statement_test.cc)
 target_link_libraries(config_statement_test config_parser_lib log_lib gtest_main gmock_main)
 add_executable(config_test tests/nginx/config_test.cc)
 target_link_libraries(config_test config_parser_lib log_lib gtest_main gmock_main)
-
+add_executable(echo_request_handler_test tests/http/server/echo_request_handler_test.cc)
+target_link_libraries(echo_request_handler_test server_lib log_lib gtest_main Boost::system)
+add_executable(static_request_handler_test tests/http/server/static_request_handler_test.cc)
+target_link_libraries(static_request_handler_test server_lib log_lib gtest_main Boost::system)
+add_executable(request_handler_factory_test tests/http/server/request_handler_factory_test.cc)
+target_link_libraries(request_handler_factory_test server_lib log_lib gtest_main Boost::system config_parser_lib)
+add_executable(mime_types_test tests/http/server/mime_types_test.cc)
+target_link_libraries(mime_types_test server_lib log_lib gtest_main Boost::system)
+add_executable(request_test tests/http/server/request_test.cc)
+target_link_libraries(request_test server_lib gtest_main Boost::system)
 
 # find google tests
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -80,16 +89,38 @@ gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOUR
 gtest_discover_tests(header_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_statement_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-
+gtest_discover_tests(echo_request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(static_request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_handler_factory_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(mime_types_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # add integration test
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test_config ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test.sh ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_BINARY_DIR}/integration_test.sh)
-
-# add public directory
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/public DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/configs/integration_test_config DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/public DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
+add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_BINARY_DIR}/integration_test/integration_test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server server_lib config_parser_lib TESTS server_test session_test config_parser_test request_parser_test reply_test request_handler_test header_test config_test config_statement_test)
+generate_coverage_report(
+  TARGETS 
+    server 
+    server_lib 
+    config_parser_lib 
+  TESTS 
+    server_test 
+    session_test 
+    config_parser_test 
+    request_parser_test 
+    reply_test 
+    request_handler_test 
+    header_test 
+    config_test 
+    config_statement_test 
+    echo_request_handler_test
+    static_request_handler_test
+    request_test
+    mime_types_test
+    request_handler_factory_test
+)

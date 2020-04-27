@@ -5,60 +5,35 @@
 #include "http/server/reply.h"
 #include "http/server/header.h"
 
-class RequestHandlerTest : public ::testing::Test 
+class mock_request_handler : public http::server::request_handler 
 {
-  // protected:
-  //   http::server::request_handler handler_;
-  //   http::server::reply rep_;
+public:
+  mock_request_handler(const std::string& target_base_url) 
+    : http::server::request_handler(target_base_url)
+  {
+  }
+
+  void handle_request(const http::server::request& req, http::server::reply& rep)
+  {
+  }
 };
 
-TEST_F(RequestHandlerTest, AssignsRequestContentToResponseBody) 
-{
-
-  // http::server::request req = {
-  //   "POST",                                      // method
-  //   "/",                                         // uri
-  //   1,                                           // http_version_major
-  //   1,                                           // http_version_major
-  //   {                                            // headers
-  //     { "Accept", "application/json, */*" },
-  //     { "Accept-Encoding", "gzip, deflate" },
-  //     { "Connection", "keep-alive" },
-  //     { "Content-Length", "18" },
-  //     { "Content-Type", "application/json" },
-  //     { "Host", "localhost:8080" },
-  //     { "User-Agent", "HTTPie/0.9.8" }
-  //   }, 
-  //   "{\"hello\": \"world\"}"                     // body
-  // };
-
-  // handler_.handle_request(req, rep_);
-
-  // std::string expected = 
-  //   "POST / HTTP/1.1\r\n"
-  //   "Accept: application/json, */*\r\n"
-  //   "Accept-Encoding: gzip, deflate\r\n"
-  //   "Connection: keep-alive\r\n"
-  //   "Content-Length: 18\r\n"
-  //   "Content-Type: application/json\r\n"
-  //   "Host: localhost:8080\r\n"
-  //   "User-Agent: HTTPie/0.9.8\r\n"
-  //   "\r\n"
-  //   "{\"hello\": \"world\"}";
-
-  // EXPECT_EQ(rep_.content, expected);
+TEST(RequestHandlerTest, TargetBaseUrlIsAssigned) {
+  mock_request_handler mock_request_handler("/base/");
+  EXPECT_EQ(mock_request_handler.target_base_url, "/base/");
 }
 
-TEST_F(RequestHandlerTest, ReadRequestBody) {
-  // http::server::request req;
-  // req.headers.resize(1);
-  // req.headers[0].name = "Content-Length";
-  // req.headers[0].value = "11";
+TEST(RequestHandlerTest, CanHandleRoot) {
+  mock_request_handler mock_request_handler("/");
+  EXPECT_TRUE(mock_request_handler.can_handle("/index.html"));
+}
 
-  // std::string extra_data_read = "hello ";
-  // handler_.read_request_body(req, extra_data_read, [](size_t length) {
-  //   return "world";
-  // });
+TEST(RequestHandlerTest, CanHandleNonRoot) {
+  mock_request_handler mock_request_handler("/public/");
+  EXPECT_TRUE(mock_request_handler.can_handle("/public/index.html"));
+}
 
-  // EXPECT_EQ(req.body, "hello world");
+TEST(RequestHandlerTest, CannotHandleDifferentBaseUrl) {
+  mock_request_handler mock_request_handler("/public/");
+  EXPECT_FALSE(mock_request_handler.can_handle("/static/index.html"));
 }

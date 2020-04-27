@@ -8,7 +8,7 @@
 namespace http {
 namespace server {
 
-static_request_handler::static_request_handler(std::string& target_base_url, std::string& root)
+static_request_handler::static_request_handler(const std::string& target_base_url, const std::string& root)
   : request_handler(target_base_url),
     root_(root)
 {

@@ -3,8 +3,10 @@
 #include "nginx/config_parser.h"
 #include "nginx/config.h"
 #include "nginx/config_statement.h"
+
 using ::testing::_;
 using ::testing::Return;
+
 class MockConfig : public nginx::config {
 public:
   MOCK_METHOD1(to_string, std::string(int));

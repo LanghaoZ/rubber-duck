@@ -9,12 +9,11 @@ namespace server {
 class static_request_handler : public request_handler
 {
 public:
-  static_request_handler(std::string& target_base_url, std::string& root);
+  static_request_handler(const std::string& target_base_url, const std::string& root);
 
   /// Handle a request and produce a reply.
   virtual void handle_request(const request& req, reply& rep);
 
-private:
   std::string root_;
 
   /// decode url special characteres

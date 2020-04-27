@@ -18,7 +18,7 @@ FROM ubuntu:bionic as deploy
 
 COPY --from=builder /usr/src/project/build/bin/server .
 COPY --from=builder /usr/src/project/conftst/rubber-duck.conf .
-COPY --from=builder /usr/src/project/build/public ./public
+COPY --from=builder /usr/src/project/public ./public
 
 EXPOSE 80
 

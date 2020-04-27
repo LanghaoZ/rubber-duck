@@ -25,9 +25,9 @@ class request_handler
 {
 public:
 
-  request_handler(std::string& target_base_url);
+  request_handler(const std::string& target_base_url);
 
-  bool can_handle(std::string& url);
+  bool can_handle(const std::string& url);
 
   /// Handle a request and produce a reply.
   virtual void handle_request(const request& req, reply& rep) = 0;
