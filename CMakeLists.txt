@@ -78,6 +78,8 @@ add_executable(mime_types_test tests/http/server/mime_types_test.cc)
 target_link_libraries(mime_types_test server_lib log_lib gtest_main Boost::system)
 add_executable(request_test tests/http/server/request_test.cc)
 target_link_libraries(request_test server_lib gtest_main Boost::system)
+add_executable(log_test tests/logging/log_test.cc)
+target_link_libraries(log_test log_lib gtest_main Boost::system Boost::regex Boost::log_setup Boost::log)
 
 # find google tests
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -94,6 +96,7 @@ gtest_discover_tests(static_request_handler_test WORKING_DIRECTORY ${CMAKE_CURRE
 gtest_discover_tests(request_handler_factory_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(mime_types_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(log_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # add integration test
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
@@ -108,6 +111,7 @@ generate_coverage_report(
     server 
     server_lib 
     config_parser_lib 
+    log_lib
   TESTS 
     server_test 
     session_test 
@@ -123,4 +127,5 @@ generate_coverage_report(
     request_test
     mime_types_test
     request_handler_factory_test
+    log_test
 )

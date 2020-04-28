@@ -10,6 +10,7 @@
 #include "http/server/reply.h"
 #include "http/server/request_handler.h"
 #include "http/server/session_manager.h"
+#include "logging/logs.h"
 
 using boost::asio::ip::tcp;
 
@@ -30,14 +31,14 @@ session::session(boost::asio::ip::tcp::socket socket,
 void session::start()
 {
   if (logging_)
-    std::cout << "Started a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
+    //std::cout << "Started a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
   do_read();
 }
 
 void session::stop()
 {
   if (logging_)
-    std::cout << "Stopped a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
+    //std::cout << "Stopped a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
   socket_.close();
 }
 
@@ -60,7 +61,6 @@ int session::handle_read(const boost::system::error_code& ec,
     char* start = buffer_.data();
     char* end = buffer_.data() + bytes_transferred;
     http::server::request_parser::result_type result;
-
     std::tie(result, start) = request_parser_.parse(
       request_, start, end);
     
@@ -70,10 +70,8 @@ int session::handle_read(const boost::system::error_code& ec,
       // read more data from socket if necessary
       read_leftover(std::string(start, end - start));
 
-      if (logging_)
-      {
-        std::cout << "Received a good HTTP request from " << socket_.remote_endpoint().address().to_string() << std::endl;
-        std::cout << "Message received from " << socket_.remote_endpoint().address().to_string() << ": \n" + request_.to_string() << std::endl;
+      if (logging_) {
+        Logs::log_request(request_, socket_, true);
       }
       
 
@@ -92,10 +90,8 @@ int session::handle_read(const boost::system::error_code& ec,
     }
     else if (result == http::server::request_parser::bad)
     {
-      if (logging_)
-      {
-        std::cout << "Received a bad HTTP request from " << socket_.remote_endpoint().address().to_string() << std::endl;
-        std::cout << "Message received from " << socket_.remote_endpoint().address().to_string() << ": \n" << request_.to_string() << std::endl;
+      if (logging_) {
+        Logs::log_request(request_, socket_, false);
       } 
       
       // respond with 400 status

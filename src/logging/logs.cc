@@ -1,12 +1,12 @@
 
 #include "logging/logs.h"
 
-void Logs::init() {
+void Logs::init(bool testing) {
     boost::log::add_common_attributes();
     boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity");
     boost::log::add_file_log
     (
-        boost::log::keywords::file_name = "../log/SERVERLOG_%N.log",
+        boost::log::keywords::file_name = testing? "../log/TESTLOG_%N.log" : "../log/SERVERLOG_%N.log",
         boost::log::keywords::rotation_size = 10 * 1024 * 1024,
         boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point(0, 0, 0),
         boost::log::keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%]: %Message%",
@@ -22,27 +22,27 @@ void Logs::init() {
 }
 
 void Logs::log_trace(std::string msg) {
-    BOOST_LOG_TRIVIAL(trace) << msg << std::endl;
+    BOOST_LOG_TRIVIAL(trace) << msg;
 }
 
 void Logs::log_debug(std::string msg) {
-    BOOST_LOG_TRIVIAL(debug) << msg << std::endl;
+    BOOST_LOG_TRIVIAL(debug) << msg;
 }
 
 void Logs::log_info(std::string msg) {
-    BOOST_LOG_TRIVIAL(info) << msg << std::endl;
+    BOOST_LOG_TRIVIAL(info) << msg;
 }
 
 void Logs::log_warning(std::string msg) {
-    BOOST_LOG_TRIVIAL(warning) << msg << std::endl;
+    BOOST_LOG_TRIVIAL(warning) << msg;
 }
 
 void Logs::log_error(std::string msg) {
-    BOOST_LOG_TRIVIAL(error) << msg << std::endl;
+    BOOST_LOG_TRIVIAL(error) << msg;
 }
 
 void Logs::log_fatal(std::string msg) {
-    BOOST_LOG_TRIVIAL(fatal) << msg << std::endl;
+    BOOST_LOG_TRIVIAL(fatal) << msg;
 }
 
 void Logs::log_signal() {
@@ -50,10 +50,11 @@ void Logs::log_signal() {
     log_warning("Shutting down the server...");
 }
 
-void Logs::log_request(http::server::request req, tcp::socket& sock) {
+void Logs::log_request(http::server::request req, tcp::socket& sock, bool good_connection) {
     std::string msg = req.method + " " + req.uri + " HTTP/" + 
                       std::to_string(req.http_version_major) + 
                       "." + std::to_string(req.http_version_minor) + 
-                      " FROM: " + sock.remote_endpoint().address().to_string();
+                      " FROM: " + sock.remote_endpoint().address().to_string() +
+                      " CONNECTION: " + (good_connection ? "Successful" : "Bad Request");
     log_trace(msg);
 }

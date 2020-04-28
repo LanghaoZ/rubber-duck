@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     // create request handlers
     std::vector<std::shared_ptr<http::server::request_handler>> request_handlers = http::server::request_handler_factory::create_request_handlers(config);
 
-    Logs::init();
+    Logs::init(false);
 
     // run the server
     http::server::server s(port, request_handlers);

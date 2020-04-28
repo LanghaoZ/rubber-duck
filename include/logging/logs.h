@@ -15,7 +15,7 @@ using boost::asio::ip::tcp;
 class Logs {
     public:
         Logs() = delete;
-        static void init();
+        static void init(bool testing);
         static void log_trace(std::string msg);
         static void log_debug(std::string msg);
         static void log_info(std::string msg);
@@ -23,7 +23,7 @@ class Logs {
         static void log_error(std::string msg);
         static void log_fatal(std::string msg);
         static void log_signal();
-        static void log_request(http::server::request req, tcp::socket& sock);
+        static void log_request(http::server::request req, tcp::socket& sock, bool good_connection);
 };
 
 #endif // LOGS_H
