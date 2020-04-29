@@ -56,5 +56,9 @@ void Logs::log_request(http::server::request req, tcp::socket& sock, bool good_c
                       "." + std::to_string(req.http_version_minor) + 
                       " FROM: " + sock.remote_endpoint().address().to_string() +
                       " CONNECTION: " + (good_connection ? "Successful" : "Bad Request");
-    log_trace(msg);
+    if (good_connection) {
+        log_trace(msg);
+    } else {
+        log_warning(msg);
+    }
 }

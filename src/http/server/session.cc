@@ -74,7 +74,6 @@ int session::handle_read(const boost::system::error_code& ec,
         Logs::log_request(request_, socket_, true);
       }
       
-
       std::shared_ptr<request_handler> request_handler;
       if (find_request_handler(request_handler))
       {
@@ -101,12 +100,14 @@ int session::handle_read(const boost::system::error_code& ec,
     }
     else
     {
+      Logs::log_debug("Continue reading in HTTP request");
       do_read();
       return 0;
     }
   }
   else if (ec != boost::asio::error::operation_aborted)
   {
+    Logs::log_error("Operation aborted. Session Stopped");
     session_manager_.stop(shared_from_this());
   }
 
@@ -157,6 +158,7 @@ void session::read_request_body(const std::string& extra_data_read,
   // read rest of the request body
   if (content_length_left > 0) 
   {
+    Logs::log_debug("Reading in additional data");
     addtional_data += reader(content_length_left);
   }
   request_.body = extra_data_read + addtional_data;
@@ -168,15 +170,19 @@ bool session::find_request_handler(std::shared_ptr<request_handler>& request_han
   {
     if (request_handlers_[i].get()->can_handle(request_.uri))
     {
+      Logs::log_debug("Located request handler");
       request_handler = request_handlers_[i];
       return true;
     }
   }
+
+  Logs::log_warning("Cannot find the corresponding request handler");
   return false;
 }
 
 void session::set_buffer(boost::array<char, 8192>& buffer)
 {
+  Logs::log_debug("Session read buffer has been initiated");
   buffer_ = buffer;
 }
 
