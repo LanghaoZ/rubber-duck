@@ -30,6 +30,30 @@ TEST_F(StaticRequestHandlerTest, DecodeSpaceCharacterInUrl) {
   EXPECT_EQ(result, "/hello world.html");
 }
 
+TEST_F(StaticRequestHandlerTest, DecodeExclamationMarkUrl) {
+  std::string result;
+  EXPECT_TRUE(handler_.url_decode("/hello%21world.html", result));
+  EXPECT_EQ(result, "/hello!world.html");
+}
+
+TEST_F(StaticRequestHandlerTest, DecodePlusUrl) {
+  std::string result;
+  EXPECT_TRUE(handler_.url_decode("/hello%2Bworld.html", result));
+  EXPECT_EQ(result, "/hello+world.html");
+}
+
+TEST_F(StaticRequestHandlerTest, DecodeQuestionMarkUrl) {
+  std::string result;
+  EXPECT_TRUE(handler_.url_decode("/hello%3Fworld.html", result));
+  EXPECT_EQ(result, "/hello?world.html");
+}
+
+TEST_F(StaticRequestHandlerTest, DecodeHashMarkUrl) {
+  std::string result;
+  EXPECT_TRUE(handler_.url_decode("/hello%23world.html", result));
+  EXPECT_EQ(result, "/hello#world.html");
+}
+
 TEST_F(StaticRequestHandlerTest, DecodePlusCharacterInUrl) {
   std::string result;
   EXPECT_TRUE(handler_.url_decode("/hello+world.html", result));
@@ -173,7 +197,6 @@ TEST_F(StaticRequestHandlerTest, StaticReqZip)
   char c;
   while (f_.get(c)) content += c;
   f_.close();
-  
   EXPECT_EQ(rep_.status, http::server::reply::ok);
   EXPECT_EQ(rep_.content, content);
 }

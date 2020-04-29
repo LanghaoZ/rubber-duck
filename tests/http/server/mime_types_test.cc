@@ -69,6 +69,10 @@ TEST_F(MimeTypeTests, TestOtherTypes)
   extension = "cc";
   mimetype = http::server::mime_types::extension_to_type(extension);
   success = success && (mimetype == "text/plain");
+
+  extension = "";
+  mimetype = http::server::mime_types::extension_to_type(extension);
+  success = success && (mimetype == "text/plain");
   
   EXPECT_TRUE(success);
 }
