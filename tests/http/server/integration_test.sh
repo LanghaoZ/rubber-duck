@@ -3,7 +3,7 @@
 # and redirect its stdout and stderr to /dev/null
 # instead of inheriting them from the parent process
 
-./bin/server ./integration_test/integration_test_config &>/dev/null &
+./bin/server ./integration_test/integration_test.conf &>/dev/null &
 
 # check server's process id so that we can kill it later
 pid=$!

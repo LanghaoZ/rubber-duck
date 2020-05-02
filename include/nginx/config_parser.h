@@ -14,7 +14,7 @@ class config;
 
 // The driver that parses a config file and generates an NginxConfig.
 class config_parser {
- public:
+public:
   config_parser() {}
 
   // Take a opened config file or file name (respectively) and store the
@@ -23,7 +23,7 @@ class config_parser {
   bool parse(std::istream* config_file, config* config);
   bool parse(const char* file_name, config* config);
 
- private:
+private:
   enum token_type {
     start = 0,
     normal = 1,
@@ -45,10 +45,9 @@ class config_parser {
   };
 
   token_type parse_token(std::istream* input, std::string* value);
-
 };
 
-}
+} // namespace nginx
 
 
 #endif // NGINX_CONFIG_PARSER_H

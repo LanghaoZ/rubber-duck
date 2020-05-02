@@ -5,11 +5,12 @@
 
 namespace http {
 namespace server {
+namespace request_handler {
 
 class static_request_handler : public request_handler
 {
 public:
-  static_request_handler(const std::string& target_base_url, const std::string& root);
+  static_request_handler(const std::string& location, const std::string& root);
 
   /// Handle a request and produce a reply.
   virtual void handle_request(const request& req, reply& rep);
@@ -30,6 +31,7 @@ public:
 
 };
 
+} // namespace request_handler
 } // namespace server
 } // namespace http
 

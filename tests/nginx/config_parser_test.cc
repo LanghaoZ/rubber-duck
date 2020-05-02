@@ -2,66 +2,63 @@
 #include "nginx/config_parser.h"
 #include "nginx/config.h"
 
-using namespace nginx;
+namespace nginx {
 
-class NginxConfigParserTest : public ::testing::Test {
-	protected:
-		nginx::config_parser parser;
-		nginx::config out_config;
+class NginxConfigParserTest : public ::testing::Test 
+{
+protected:
+  config_parser parser_;
+  config out_config_;
 };
 
-TEST_F(NginxConfigParserTest, SimpleConfig) {
-	bool success = parser.parse("nginx/configs/example_config", &out_config);
-	EXPECT_TRUE(success);
+TEST_F(NginxConfigParserTest, SimpleConfig) 
+{
+	EXPECT_TRUE(parser_.parse("nginx/configs/example.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, CommentConfig) {
-	bool success = parser.parse("nginx/configs/comment_config", &out_config);
-	EXPECT_TRUE(success);
+TEST_F(NginxConfigParserTest, CommentConfig) 
+{
+	EXPECT_TRUE(parser_.parse("nginx/configs/comment.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, UnmatchedBracketsConfig) {
-	bool success = parser.parse("nginx/configs/unmatched_brackets_config", &out_config);
-	EXPECT_FALSE(success);
+TEST_F(NginxConfigParserTest, UnmatchedBracketsConfig) 
+{
+	EXPECT_FALSE(parser_.parse("nginx/configs/unmatched_brackets.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, EmptyBlockConfig) {
-	bool success = parser.parse("nginx/configs/empty_block_config", &out_config);
-	EXPECT_TRUE(success);
+TEST_F(NginxConfigParserTest, EmptyBlockConfig) 
+{
+	EXPECT_TRUE(parser_.parse("nginx/configs/empty_block.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, ConsecutiveClosingBracketsConfig) {
-	bool success = parser.parse("nginx/configs/consecutive_closing_brackets_config", &out_config);
-	EXPECT_TRUE(success);
+TEST_F(NginxConfigParserTest, ConsecutiveClosingBracketsConfig) 
+{
+	EXPECT_TRUE(parser_.parse("nginx/configs/consecutive_closing_brackets.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, NestedBlockConfig) {
-	bool success = parser.parse("nginx/configs/nested_block_config", &out_config);
-	EXPECT_TRUE(success);
+TEST_F(NginxConfigParserTest, NestedBlockConfig) 
+{
+	EXPECT_TRUE(parser_.parse("nginx/configs/nested_block.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, NoSemicolonConfig) {
-	bool success = parser.parse("nginx/configs/no_semicolon_config", &out_config);
-	EXPECT_FALSE(success);
+TEST_F(NginxConfigParserTest, NoSemicolonConfig) 
+{
+	EXPECT_FALSE(parser_.parse("nginx/configs/no_semicolon.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, MultipleTokensConfig) {
-	bool success = parser.parse("nginx/configs/multiple_tokens_config", &out_config);
-	EXPECT_TRUE(success);
+TEST_F(NginxConfigParserTest, MultipleTokensConfig) 
+{
+	EXPECT_TRUE(parser_.parse("nginx/configs/multiple_tokens.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, NoTokenConfig) {
-	bool success = parser.parse("nginx/onfigs/no_token_config", &out_config);
-	EXPECT_FALSE(success);
+TEST_F(NginxConfigParserTest, NoTokenConfig) 
+{
+	EXPECT_FALSE(parser_.parse("nginx/onfigs/no_token.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, SampleNginxConfig) {
-	bool success = parser.parse("nginx/configs/nginx_config", &out_config);
-	EXPECT_TRUE(success);
+TEST_F(NginxConfigParserTest, SampleNginxConfig) 
+{
+	EXPECT_TRUE(parser_.parse("nginx/configs/nginx.conf", &out_config_));
 }
 
-TEST_F(NginxConfigParserTest, GetPortFromNull) {
-    bool success = parser.parse("nginx/configs/empty_config", &out_config);
-    int port = out_config.get_port();
-    EXPECT_TRUE(port == nginx::err_not_found);
-}
+} // namespace nginx

@@ -3,32 +3,36 @@
 #include <unordered_map> 
 #include "gtest/gtest.h"
 #include "http/server/session.h"
-#include "http/server/request_handler.h"
+#include "http/server/request_handler/request_handler.h"
 #include "http/server/session_manager.h"
 #include "nginx/config.h"
 #include "nginx/config_parser.h"
-#include "http/server/request_handler_factory.h"
+#include "http/server/request_handler/request_handler_factory.h"
 
 using namespace boost::system;
 
-class SessionTest : public ::testing::Test {
-  protected:
-    SessionTest() 
-      : io_service_(), 
-        socket_(io_service_)
-    {
-    }
+namespace http {
+namespace server {
 
-    boost::asio::io_service io_service_;
-    boost::asio::ip::tcp::socket socket_;
-    std::vector<std::shared_ptr<http::server::request_handler>> handlers_;
-    http::server::session_manager manager_;
+class SessionTest : public ::testing::Test {
+protected:
+  SessionTest() 
+    : io_service_(), 
+      socket_(io_service_)
+  {
+  }
+
+  boost::asio::io_service io_service_;
+  boost::asio::ip::tcp::socket socket_;
+  std::vector<std::shared_ptr<request_handler::request_handler>> handlers_;
+  session_manager manager_;
 };
 
-TEST_F(SessionTest, HandlesGoodRequest) {
+TEST_F(SessionTest, HandlesGoodRequest) 
+{
 
   // instantiate session
-  auto session = std::make_shared<http::server::session>(std::move(socket_), manager_, handlers_, false);
+  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_, handlers_, false);
   
   // send a message to the server
   boost::array<char, 8192> buffer;
@@ -40,16 +44,17 @@ TEST_F(SessionTest, HandlesGoodRequest) {
   {
     buffer[i] = request[i];
   }
-  session->set_buffer(buffer);
+  s->set_buffer(buffer);
 
   error_code ec;
-  EXPECT_EQ(session->handle_read(ec, request.size()), 0);
+  EXPECT_EQ(s->handle_read(ec, request.size()), 0);
   
 }
 
-TEST_F(SessionTest, HandlesIntermediateRequest) {
+TEST_F(SessionTest, HandlesIntermediateRequest) 
+{
   // instantiate session
-  auto session = std::make_shared<http::server::session>(std::move(socket_), manager_, handlers_, false);
+  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_, handlers_, false);
   
   // send a message to the server
   boost::array<char, 8192> buffer;
@@ -58,16 +63,17 @@ TEST_F(SessionTest, HandlesIntermediateRequest) {
   {
     buffer[i] = request[i];
   }
-  session->set_buffer(buffer);
+  s->set_buffer(buffer);
 
   error_code ec;
-  EXPECT_EQ(session->handle_read(ec, request.size()), 0);
+  EXPECT_EQ(s->handle_read(ec, request.size()), 0);
 }
 
-TEST_F(SessionTest, HandlesBadRequest) {
+TEST_F(SessionTest, HandlesBadRequest) 
+{
 
   // instantiate session
-  auto session = std::make_shared<http::server::session>(std::move(socket_), manager_, handlers_, false);
+  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_, handlers_, false);
   
   // send a message to the server
   boost::array<char, 8192> buffer;
@@ -76,16 +82,20 @@ TEST_F(SessionTest, HandlesBadRequest) {
   {
     buffer[i] = request[i];
   }
-  session->set_buffer(buffer);
+  s->set_buffer(buffer);
 
   error_code ec;
-  EXPECT_EQ(session->handle_read(ec, request.size()), 1);
+  EXPECT_EQ(s->handle_read(ec, request.size()), 1);
 }
 
-TEST_F(SessionTest, HandlesErrorRequest) {
+TEST_F(SessionTest, HandlesErrorRequest) 
+{
   // instantiate session
-  auto session = std::make_shared<http::server::session>(std::move(socket_), manager_, handlers_, false);
+  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_, handlers_, false);
 
   error_code ec = errc::make_error_code(errc::not_supported);
-  EXPECT_EQ(session->handle_read(ec, 0), 1);
+  EXPECT_EQ(s->handle_read(ec, 0), 1);
 }
+
+} // namespace server
+} // namespace http

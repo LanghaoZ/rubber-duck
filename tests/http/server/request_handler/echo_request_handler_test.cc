@@ -1,26 +1,30 @@
 #include <boost/asio.hpp>
 #include "gtest/gtest.h"
-#include "http/server/echo_request_handler.h"
+#include "http/server/request_handler/echo_request_handler.h"
 #include "http/server/request.h"
 #include "http/server/reply.h"
 #include "http/server/header.h"
 
+namespace http {
+namespace server {
+namespace request_handler {
+
 class EchoRequestHandlerTest : public ::testing::Test 
 {
-  protected:
-    EchoRequestHandlerTest()
-      : handler_("/echo/")
-    {
-    }
+protected:
+  EchoRequestHandlerTest()
+    : handler_("/echo/")
+  {
+  }
 
-    http::server::echo_request_handler handler_;
-    http::server::reply rep_;
+  echo_request_handler handler_;
+  reply rep_;
 };
 
 TEST_F(EchoRequestHandlerTest, AssignsRequestContentToResponseBody) 
 {
   
-  http::server::request req = {
+  request req = {
     "POST",                                      // method
     "/",                                         // uri
     1,                                           // http_version_major
@@ -53,3 +57,7 @@ TEST_F(EchoRequestHandlerTest, AssignsRequestContentToResponseBody)
   
   EXPECT_EQ(rep_.content, expected);
 }
+
+} // namespace request_handler
+} // namespace server
+} // namespace http

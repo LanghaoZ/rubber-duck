@@ -3,6 +3,10 @@
 
 namespace nginx {
 
+config::~config()
+{
+}
+
 std::string config::to_string(int depth) 
 {
   std::string serialized_config;

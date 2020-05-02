@@ -4,7 +4,7 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <unordered_map> 
-#include "request_handler.h"
+#include "request_handler/request_handler.h"
 #include "session.h"
 #include "session_manager.h"
 
@@ -19,7 +19,7 @@ public:
   server(const server&) = delete;
   server& operator=(const server&) = delete;
 
-  server(short port, std::vector<std::shared_ptr<request_handler>>& request_handlers);
+  server(short port, std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers);
 
   /// Run the server's io_service loop.
   void run();
@@ -48,7 +48,7 @@ private:
 
   /// The handler for all incoming requests.
   /// request path -> handler
-  std::vector<std::shared_ptr<request_handler>>& request_handlers_;
+  std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers_;
   
 };
 

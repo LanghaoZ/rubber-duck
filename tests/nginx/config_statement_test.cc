@@ -7,48 +7,63 @@
 using ::testing::_;
 using ::testing::Return;
 
-class MockConfig : public nginx::config {
+namespace nginx {
+
+class mock_config : public config 
+{
 public:
   MOCK_METHOD1(to_string, std::string(int));
 };
 
-TEST(ConfigStatementTest, EmptyTokensTest) {
-
-  nginx::config_statement statement;
+TEST(ConfigStatementTest, EmptyTokensTest) 
+{
+  config_statement statement;
   EXPECT_EQ(statement.to_string(0), ";\n");
 }
 
-TEST(ConfigStatementTest, SerializesTokensWithoutChildBlock) {
-
-  nginx::config_statement statement;
-
+TEST(ConfigStatementTest, SerializesTokensWithoutChildBlock) 
+{
+  /**
+   * foo bar foobar; 
+   */
+  config_statement statement;
   statement.tokens_.push_back("foo");
   statement.tokens_.push_back("bar");
   statement.tokens_.push_back("foobar");
   EXPECT_EQ(statement.to_string(0), "foo bar foobar;\n");
 }
 
-TEST(ConfigStatementTest, SerializesTokensWithChildBlock) {
+TEST(ConfigStatementTest, SerializesTokensWithChildBlock) 
+{
+  /**
+   * foo bar {
+   *   port 8080;
+   * }
+   */ 
+  config_statement statement;
+  std::unique_ptr<mock_config> conf = std::make_unique<mock_config>();
 
-  nginx::config_statement *statement = new nginx::config_statement;
-  statement->tokens_.push_back("foo");
-  statement->tokens_.push_back("bar");
-  MockConfig * mock_config = new MockConfig;
-  EXPECT_CALL(*mock_config, to_string(_)).WillOnce(Return("\tport 8080;\n"));
-  statement->child_block_.reset(mock_config);
-  EXPECT_EQ(statement->to_string(0), "foo bar {\n\tport 8080;\n}\n");
-  delete mock_config;
+  EXPECT_CALL(*conf, to_string(_)).WillOnce(Return("  port 8080;\n"));
+  
+  statement.tokens_.push_back("foo");
+  statement.tokens_.push_back("bar");
+  statement.child_block_ = std::move(conf);
+
+  EXPECT_EQ(statement.to_string(0), "foo bar {\n  port 8080;\n}\n");
 }
 
-TEST(ConfigStatementTest, SerializesTokensWithOneIndentation) {
-
-  nginx::config_statement statement;
+TEST(ConfigStatementTest, SerializesTokensWithOneIndentation) 
+{
+  /**
+   *   foo bar foobar; 
+   */
+  config_statement statement;
 
   statement.tokens_.push_back("foo");
   statement.tokens_.push_back("bar");
   statement.tokens_.push_back("foobar");
+
   EXPECT_EQ(statement.to_string(1), "  foo bar foobar;\n");
 }
 
-
-
+} // namespace nginx

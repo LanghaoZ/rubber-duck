@@ -13,15 +13,15 @@
 #include <boost/asio.hpp>
 #include "http/server/server.h"
 #include "http/server/session.h"
-#include "http/server/request_handler.h"
-#include "logging/logs.h"
+#include "http/server/request_handler/request_handler.h"
+#include "logging/logging.h"
 
 using boost::asio::ip::tcp;
 
 namespace http {
 namespace server {
 
-server::server(short port, std::vector<std::shared_ptr<request_handler>>& request_handlers)
+server::server(short port, std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers)
   : io_service_(),
     signals_(io_service_),
     socket_(io_service_),
@@ -83,7 +83,7 @@ void server::do_await_stop()
       // call will exit.
       acceptor_.close();
       session_manager_.stop_all();
-      Logs::log_signal();
+      logging::logging::log_signal();
     });
 }
 

@@ -1,5 +1,5 @@
 #include <fstream>
-#include "http/server/static_request_handler.h"
+#include "http/server/request_handler/static_request_handler.h"
 #include "http/server/request.h"
 #include "http/server/reply.h"
 #include "http/server/mime_types.h"
@@ -7,9 +7,10 @@
 
 namespace http {
 namespace server {
+namespace request_handler {
 
-static_request_handler::static_request_handler(const std::string& target_base_url, const std::string& root)
-  : request_handler(target_base_url),
+static_request_handler::static_request_handler(const std::string& location, const std::string& root)
+  : request_handler(location),
     root_(root)
 {
 
@@ -88,7 +89,7 @@ std::string static_request_handler::find_file_extension(const std::string& reque
 
 std::string static_request_handler::translate_request_path(const std::string& request_path)
 {
-  return root_ + request_path.substr(target_base_url.size() - 1);
+  return root_ + request_path.substr(location_.size() - 1);
 }
 
 bool static_request_handler::url_decode(const std::string& in, std::string& out)
@@ -130,5 +131,6 @@ bool static_request_handler::url_decode(const std::string& in, std::string& out)
   return true;
 }
 
+} // namespace request_handler
 } // namespace server
 } // namespace http

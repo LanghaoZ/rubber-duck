@@ -1,12 +1,17 @@
 #include "gtest/gtest.h"
 #include "http/server/request.h"
 
-class RequestTest : public ::testing::Test {
-  protected:
-    http::server::request req_;
+namespace http {
+namespace server {
+
+class RequestTest : public ::testing::Test 
+{
+protected:
+  request req_;
 };
 
-TEST_F(RequestTest, GetNonZeroContentLength) {
+TEST_F(RequestTest, GetNonZeroContentLength) 
+{
   req_.headers.resize(2);
   req_.headers[0].name = "Host";
   req_.headers[0].value = "rubberduck.com";
@@ -15,14 +20,16 @@ TEST_F(RequestTest, GetNonZeroContentLength) {
   EXPECT_EQ(req_.get_content_length(), 10);
 }
 
-TEST_F(RequestTest, GetZeroContentLength) {
+TEST_F(RequestTest, GetZeroContentLength) 
+{
   req_.headers.resize(1);
   req_.headers[0].name = "Host";
   req_.headers[0].value = "rubberduck.com";
   EXPECT_EQ(req_.get_content_length(), 0);
 }
 
-TEST_F(RequestTest, ConvertsToString) {
+TEST_F(RequestTest, ConvertsToString) 
+{
   req_.method = "GET";
   req_.uri = "/";
   req_.http_version_major = 1;
@@ -41,3 +48,6 @@ TEST_F(RequestTest, ConvertsToString) {
   EXPECT_EQ(req_.to_string(), expected);
 
 }
+
+} // namespace server
+} // namespace http

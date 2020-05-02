@@ -3,18 +3,23 @@
 #include <unordered_map> 
 #include "gtest/gtest.h"
 #include "http/server/server.h"
-#include "http/server/request_handler.h"
+#include "http/server/request_handler/request_handler.h"
+
+namespace http {
+namespace server {
 
 void server_8080_thread()
 {
-  std::vector<std::shared_ptr<http::server::request_handler>> request_handlers;
-  http::server::server s(8080, request_handlers);
+  std::vector<std::shared_ptr<request_handler::request_handler>> request_handlers;
+  server s(8080, request_handlers);
   s.run();
 }
 
-TEST(ServerTest, ServerReadsDataFromClient) {
+TEST(ServerTest, ServerReadsDataFromClient) 
+{
   
-  try {
+  try 
+  {
     // run the server in a different thread
     boost::thread s(&server_8080_thread);
 
@@ -53,12 +58,13 @@ TEST(ServerTest, ServerReadsDataFromClient) {
 
 void server_8081_thread()
 {
-  std::vector<std::shared_ptr<http::server::request_handler>> request_handlers;
-  http::server::server s(8081, request_handlers);
+  std::vector<std::shared_ptr<request_handler::request_handler>> request_handlers;
+  server s(8081, request_handlers);
   s.run();
 }
 
-TEST(ServerTest, ServerReceivesSignalAndExits) {
+TEST(ServerTest, ServerReceivesSignalAndExits) 
+{
   
   try {
     // run the server in a different thread
@@ -90,3 +96,6 @@ TEST(ServerTest, ServerReceivesSignalAndExits) {
   } 
   
 }
+
+} // namespace server
+} // namespace http

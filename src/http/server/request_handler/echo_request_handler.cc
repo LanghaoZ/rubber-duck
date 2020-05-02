@@ -1,12 +1,13 @@
-#include "http/server/echo_request_handler.h"
+#include "http/server/request_handler/echo_request_handler.h"
 #include "http/server/request.h"
 #include "http/server/reply.h"
 
 namespace http {
 namespace server {
+namespace request_handler {
 
-echo_request_handler::echo_request_handler(const std::string& target_base_url)
-  : request_handler(target_base_url)
+echo_request_handler::echo_request_handler(const std::string& location)
+  : request_handler(location)
 {
 
 }
@@ -30,5 +31,6 @@ void echo_request_handler::handle_request(const request& req, reply& rep)
   rep.headers[1].value = std::to_string(rep.content.size());
 }
 
+} // namespace request_handler
 } // namespace server
 } // namespace http

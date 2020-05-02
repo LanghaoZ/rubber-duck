@@ -18,7 +18,6 @@ namespace server {
 
 struct header
 {
-
   // possible field names of request/response header
   enum field_name_type 
   {

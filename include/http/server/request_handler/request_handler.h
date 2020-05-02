@@ -13,19 +13,19 @@
 
 #include <string>
 #include <functional>
+#include "http/server/reply.h"
+#include "http/server/request.h"
 
 namespace http {
 namespace server {
-
-struct reply;
-struct request;
+namespace request_handler {
 
 /// The common handler for all incoming requests.
 class request_handler
 {
 public:
 
-  request_handler(const std::string& target_base_url);
+  request_handler(const std::string& location);
 
   bool can_handle(const std::string& url);
 
@@ -33,10 +33,11 @@ public:
   virtual void handle_request(const request& req, reply& rep) = 0;
 
   // url base path to handle
-  std::string target_base_url;
+  std::string location_;
 
 };
 
+} // namespace request_handler
 } // namespace server
 } // namespace http
 

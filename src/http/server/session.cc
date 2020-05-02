@@ -8,9 +8,9 @@
 #include "http/server/session.h"
 #include "http/server/request_parser.h"
 #include "http/server/reply.h"
-#include "http/server/request_handler.h"
+#include "http/server/request_handler/request_handler.h"
 #include "http/server/session_manager.h"
-#include "logging/logs.h"
+#include "logging/logging.h"
 
 using boost::asio::ip::tcp;
 
@@ -19,7 +19,7 @@ namespace server {
 
 session::session(boost::asio::ip::tcp::socket socket,
   session_manager& manager,
-  std::vector<std::shared_ptr<request_handler>>& request_handlers,
+  std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers,
   bool logging)
   : socket_(std::move(socket)),
     session_manager_(manager),
@@ -71,10 +71,10 @@ int session::handle_read(const boost::system::error_code& ec,
       read_leftover(std::string(start, end - start));
 
       if (logging_) {
-        Logs::log_request(request_, socket_, true);
+        logging::logging::log_request(request_, socket_, true);
       }
       
-      std::shared_ptr<request_handler> request_handler;
+      std::shared_ptr<request_handler::request_handler> request_handler;
       if (find_request_handler(request_handler))
       {
         request_handler.get()->handle_request(request_, reply_);
@@ -90,7 +90,7 @@ int session::handle_read(const boost::system::error_code& ec,
     else if (result == http::server::request_parser::bad)
     {
       if (logging_) {
-        Logs::log_request(request_, socket_, false);
+        logging::logging::log_request(request_, socket_, false);
       } 
       
       // respond with 400 status
@@ -100,14 +100,14 @@ int session::handle_read(const boost::system::error_code& ec,
     }
     else
     {
-      Logs::log_debug("Continue reading in HTTP request");
+      logging::logging::log_debug("Continue reading in HTTP request");
       do_read();
       return 0;
     }
   }
   else if (ec != boost::asio::error::operation_aborted)
   {
-    Logs::log_error("Operation aborted. Session Stopped");
+    logging::logging::log_error("Operation aborted. Session Stopped");
     session_manager_.stop(shared_from_this());
   }
 
@@ -158,31 +158,31 @@ void session::read_request_body(const std::string& extra_data_read,
   // read rest of the request body
   if (content_length_left > 0) 
   {
-    Logs::log_debug("Reading in additional data");
+    logging::logging::log_debug("Reading in additional data");
     addtional_data += reader(content_length_left);
   }
   request_.body = extra_data_read + addtional_data;
 }
 
-bool session::find_request_handler(std::shared_ptr<request_handler>& request_handler)
+bool session::find_request_handler(std::shared_ptr<request_handler::request_handler>& request_handler)
 {
   for (int i = 0; i < request_handlers_.size(); i++)
   {
     if (request_handlers_[i].get()->can_handle(request_.uri))
     {
-      Logs::log_debug("Located request handler");
+      logging::logging::log_debug("Located request handler");
       request_handler = request_handlers_[i];
       return true;
     }
   }
 
-  Logs::log_warning("Cannot find the corresponding request handler");
+  logging::logging::log_warning("Cannot find the corresponding request handler");
   return false;
 }
 
 void session::set_buffer(boost::array<char, 8192>& buffer)
 {
-  Logs::log_debug("Session read buffer has been initiated");
+  logging::logging::log_debug("Session read buffer has been initiated");
   buffer_ = buffer;
 }
 

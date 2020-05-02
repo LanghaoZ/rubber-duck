@@ -27,7 +27,9 @@ struct server {
 // The parsed representation of the entire config.
 class config {
   public:
+    virtual ~config();
     virtual std::string to_string(int depth = 0);
+    
     std::vector<std::shared_ptr<nginx::config_statement>> statements_;
     int get_port();
     std::vector<server> get_servers();

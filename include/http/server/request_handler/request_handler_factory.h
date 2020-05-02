@@ -8,18 +8,18 @@
 
 namespace http {
 namespace server {
+namespace request_handler {
 
 class request_handler_factory
 {
-
 public:
   static std::vector<std::shared_ptr<request_handler>> create_request_handlers(nginx::config& config);
 
 private:
   request_handler_factory() {}
-
 };
 
+} // namespace request_handler
 } // namespace server
 } // namespace http
 
