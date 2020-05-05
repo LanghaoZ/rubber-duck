@@ -19,26 +19,20 @@ namespace server {
 
 session::session(boost::asio::ip::tcp::socket socket,
   session_manager& manager,
-  std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers,
-  bool logging)
+  std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers)
   : socket_(std::move(socket)),
     session_manager_(manager),
-    request_handlers_(request_handlers),
-    logging_(logging)
+    request_handlers_(request_handlers)
 {
 }
 
 void session::start()
 {
-  if (logging_)
-    //std::cout << "Started a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
-  do_read();
+  do_read(); 
 }
 
 void session::stop()
 {
-  if (logging_)
-    //std::cout << "Stopped a session with " << socket_.remote_endpoint().address().to_string() << std::endl;
   socket_.close();
 }
 
@@ -63,23 +57,23 @@ int session::handle_read(const boost::system::error_code& ec,
     http::server::request_parser::result_type result;
     std::tie(result, start) = request_parser_.parse(
       request_, start, end);
-    
+
     if (result == http::server::request_parser::good)
     {
       // buffer may contain more data beyond end of request header
       // read more data from socket if necessary
       read_leftover(std::string(start, end - start));
 
-      if (logging_) {
-        logging::logging::log_request(request_, socket_, true);
-      }
+      logging::logging::log_info(request_.to_digest() + " FROM " + find_client_address() + "\n");
+      logging::logging::log_trace(request_.to_string());
       
       std::shared_ptr<request_handler::request_handler> request_handler;
       if (find_request_handler(request_handler))
       {
         request_handler.get()->handle_request(request_, reply_);
       }
-      else {
+      else 
+      {
         // no request handler can handle the uri
         reply_ = http::server::reply::stock_reply(http::server::reply::not_found);
       }
@@ -89,10 +83,9 @@ int session::handle_read(const boost::system::error_code& ec,
     }
     else if (result == http::server::request_parser::bad)
     {
-      if (logging_) {
-        logging::logging::log_request(request_, socket_, false);
-      } 
-      
+      logging::logging::log_info(request_.to_digest() + " FROM " + find_client_address() + "\n");
+      logging::logging::log_trace(request_.to_string());
+
       // respond with 400 status
       reply_ = http::server::reply::stock_reply(http::server::reply::bad_request);
       do_write();
@@ -178,6 +171,23 @@ bool session::find_request_handler(std::shared_ptr<request_handler::request_hand
 
   logging::logging::log_warning("Cannot find the corresponding request handler");
   return false;
+}
+
+std::string session::find_client_address()
+{
+  std::string client_address;
+  boost::system::error_code ec;
+  boost::asio::ip::tcp::endpoint endpoint = socket_.remote_endpoint(ec);
+  if (ec)
+  {
+    logging::logging::log_error("Failed to find the client address\n");
+  }
+  else 
+  {
+    client_address = endpoint.address().to_string();
+  }
+
+  return client_address;
 }
 
 void session::set_buffer(boost::array<char, 8192>& buffer)

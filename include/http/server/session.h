@@ -26,8 +26,7 @@ public:
 
   /// Construct a connection with the given socket.
   explicit session(boost::asio::ip::tcp::socket socket, 
-    session_manager& manager, std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers,
-    bool logging=true);
+    session_manager& manager, std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers);
 
   /// Start the first asynchronous operation for the connection.
   virtual void start();
@@ -58,6 +57,9 @@ private:
   /// find the request handler that can handle the request
   bool find_request_handler(std::shared_ptr<request_handler::request_handler>& request_handler);
 
+  /// find remote endpoint address
+  std::string find_client_address();
+
   /// Socket for the connection.
   boost::asio::ip::tcp::socket socket_;
 
@@ -79,8 +81,6 @@ private:
   /// The reply to be sent back to the client.
   reply reply_;
 
-  /// flag for logging
-  bool logging_;
 };
 
 } // namespace server

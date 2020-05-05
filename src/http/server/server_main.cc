@@ -24,8 +24,9 @@ using boost::asio::ip::tcp;
 
 int main(int argc, char* argv[])
 {
-  logging::logging::init(false);
+  logging::logging::init("../log/SERVERLOG_%N.log");
   logging::logging::log_info("Logger has been initiated");
+  
   try
   {
     // argument check
@@ -38,16 +39,19 @@ int main(int argc, char* argv[])
     nginx::config config;
     bool success = parser.parse(argv[1], &config);
 
-    if (success) {
+    if (success) 
+    {
       logging::logging::log_trace("Successfully parsed Nginx config: " + std::string(argv[1]));
     } 
     
-    else {
+    else 
+    {
       logging::logging::log_error("Failed to parse Nginx config:" + std::string(argv[1]));
     }
 
     int port = config.get_port();
-    if (port == nginx::err_not_found) {
+    if (port == nginx::err_not_found) 
+    {
       logging::logging::log_fatal("Failed to parse the port from " + std::string(argv[1]));
       return 1;
     }

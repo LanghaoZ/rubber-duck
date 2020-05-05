@@ -21,17 +21,7 @@ size_t request::get_content_length()
 
 std::string request::to_string() const
 {
-  std::string res = "";
-  res += method;
-  res += " ";
-
-  res += uri;
-  res += " ";
-
-  res += "HTTP/";
-  res += std::to_string(http_version_major);
-  res += ".";
-  res += std::to_string(http_version_minor);
+  std::string res = to_digest();
 
   res += "\r\n";
 
@@ -45,6 +35,23 @@ std::string request::to_string() const
   res += "\r\n";
 
   res += body;
+
+  return res;
+}
+
+std::string request::to_digest() const
+{
+  std::string res = "";
+  res += method;
+  res += " ";
+
+  res += uri;
+  res += " ";
+
+  res += "HTTP/";
+  res += std::to_string(http_version_major);
+  res += ".";
+  res += std::to_string(http_version_minor);
 
   return res;
 }

@@ -29,6 +29,7 @@ struct request
   std::string body;
   size_t get_content_length();
   std::string to_string() const;
+  std::string to_digest() const;
 };
 
 } // namespace server

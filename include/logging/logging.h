@@ -18,7 +18,7 @@ class logging
 {
 public:
   logging() = delete;
-  static void init(bool testing);
+  static void init(const std::string& file_name);
   static void log_trace(std::string msg);
   static void log_debug(std::string msg);
   static void log_info(std::string msg);
@@ -26,7 +26,6 @@ public:
   static void log_error(std::string msg);
   static void log_fatal(std::string msg);
   static void log_signal();
-  static void log_request(http::server::request req, tcp::socket& sock, bool good_connection);
 };
 
 } // namespace logging

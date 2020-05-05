@@ -39,7 +39,7 @@ protected:
 TEST_F(LoggingTest, LogTraceMsg) 
 {
   remove(filename_.c_str());
-  logging::init(true);
+  logging::init(filename_);
   logging::log_trace(msg_);
   std::string log_msg = get_last_log_message();
   int index = log_msg.find("trace");
@@ -52,7 +52,7 @@ TEST_F(LoggingTest, LogTraceMsg)
 TEST_F(LoggingTest, LogDebugMsg) 
 {
   remove(filename_.c_str());
-  logging::init(true);
+  logging::init(filename_);
   logging::log_debug(msg_);
   std::string log_msg = get_last_log_message();
   int index = log_msg.find("debug");
@@ -65,7 +65,7 @@ TEST_F(LoggingTest, LogDebugMsg)
 TEST_F(LoggingTest, LogInfoMsg) 
 {
   remove(filename_.c_str());
-  logging::init(true);
+  logging::init(filename_);
   logging::log_info(msg_);
   std::string log_msg = get_last_log_message();
   int index = log_msg.find("info");
@@ -78,7 +78,7 @@ TEST_F(LoggingTest, LogInfoMsg)
 TEST_F(LoggingTest, LogWarningMsg) 
 {
   remove(filename_.c_str());
-  logging::init(true);
+  logging::init(filename_);
   logging::log_warning(msg_);
   std::string log_msg = get_last_log_message();
   int index = log_msg.find("warning");
@@ -91,7 +91,7 @@ TEST_F(LoggingTest, LogWarningMsg)
 TEST_F(LoggingTest, LogErrorMsg) 
 {
   remove(filename_.c_str());
-  logging::init(true);
+  logging::init(filename_);
   logging::log_error(msg_);
   std::string log_msg = get_last_log_message();
   int index = log_msg.find("error");
@@ -104,7 +104,7 @@ TEST_F(LoggingTest, LogErrorMsg)
 TEST_F(LoggingTest, LogFatalMsg) 
 {
   remove(filename_.c_str());
-  logging::init(true);
+  logging::init(filename_);
   logging::log_fatal(msg_);
   std::string log_msg = get_last_log_message();
   int index = log_msg.find("fatal");
