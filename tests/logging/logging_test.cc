@@ -1,6 +1,5 @@
 #include <boost/asio.hpp>
 #include <iostream>
-#include <cstdio>
 #include <fstream>
 #include <string>
 #include "gtest/gtest.h"
