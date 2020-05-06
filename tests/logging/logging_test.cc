@@ -45,7 +45,7 @@ TEST_F(LoggingTest, LogTraceMsg)
   trim_log_content(log_msg);
 
   EXPECT_EQ(msg_, log_msg);
-  EXPECT_GE(index, 0);
+  EXPECT_GT(index, 0);
 }
 
 TEST_F(LoggingTest, LogDebugMsg) 
@@ -58,7 +58,7 @@ TEST_F(LoggingTest, LogDebugMsg)
   trim_log_content(log_msg);
 
   EXPECT_EQ(msg_, log_msg);
-  EXPECT_GE(index, 0);
+  EXPECT_GT(index, 0);
 }
 
 TEST_F(LoggingTest, LogInfoMsg) 
@@ -71,7 +71,7 @@ TEST_F(LoggingTest, LogInfoMsg)
   trim_log_content(log_msg);
 
   EXPECT_EQ(msg_, log_msg);
-  EXPECT_GE(index, 0);
+  EXPECT_GT(index, 0);
 }
 
 TEST_F(LoggingTest, LogWarningMsg) 
@@ -84,7 +84,7 @@ TEST_F(LoggingTest, LogWarningMsg)
   trim_log_content(log_msg);
 
   EXPECT_EQ(msg_, log_msg);
-  EXPECT_GE(index, 0);
+  EXPECT_GT(index, 0);
 }
 
 TEST_F(LoggingTest, LogErrorMsg) 
@@ -97,7 +97,7 @@ TEST_F(LoggingTest, LogErrorMsg)
   trim_log_content(log_msg);
 
   EXPECT_EQ(msg_, log_msg);
-  EXPECT_GE(index, 0);
+  EXPECT_GT(index, 0);
 }
 
 TEST_F(LoggingTest, LogFatalMsg) 
@@ -110,7 +110,7 @@ TEST_F(LoggingTest, LogFatalMsg)
   trim_log_content(log_msg);
 
   EXPECT_EQ(msg_, log_msg);
-  EXPECT_GE(index, 0);
+  EXPECT_GT(index, 0);
 }
 
 } // namespace logging
