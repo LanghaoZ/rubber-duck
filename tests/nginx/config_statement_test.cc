@@ -21,6 +21,20 @@ TEST(ConfigStatementTest, EmptyTokensTest)
   EXPECT_EQ(statement.to_string(0), ";\n");
 }
 
+TEST(ConfigStatementTest, SerializesTokensWithOneIndentation) 
+{
+  /**
+   *   foo bar foobar; 
+   */
+  config_statement statement;
+
+  statement.tokens_.push_back("foo");
+  statement.tokens_.push_back("bar");
+  statement.tokens_.push_back("foobar");
+
+  EXPECT_EQ(statement.to_string(1), "  foo bar foobar;\n");
+}
+
 TEST(ConfigStatementTest, SerializesTokensWithoutChildBlock) 
 {
   /**
@@ -50,20 +64,6 @@ TEST(ConfigStatementTest, SerializesTokensWithChildBlock)
   statement.child_block_ = std::move(conf);
 
   EXPECT_EQ(statement.to_string(0), "foo bar {\n  port 8080;\n}\n");
-}
-
-TEST(ConfigStatementTest, SerializesTokensWithOneIndentation) 
-{
-  /**
-   *   foo bar foobar; 
-   */
-  config_statement statement;
-
-  statement.tokens_.push_back("foo");
-  statement.tokens_.push_back("bar");
-  statement.tokens_.push_back("foobar");
-
-  EXPECT_EQ(statement.to_string(1), "  foo bar foobar;\n");
 }
 
 } // namespace nginx

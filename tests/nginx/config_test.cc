@@ -23,12 +23,11 @@ TEST(ConfigTest, EmptyConfigTest)
 
 TEST(ConfigTest, ToStringTest) 
 {
-  std::unique_ptr<config> conf = std::make_unique<config>();
   std::shared_ptr<mock_config_statement> conf_statement = std::make_shared<mock_config_statement>();
-
-	conf->statements_.emplace_back(conf_statement);
-
 	EXPECT_CALL(*conf_statement, to_string(_)).WillOnce(Return("server;"));
+  
+  std::unique_ptr<config> conf = std::make_unique<config>();
+	conf->statements_.emplace_back(conf_statement);
 	EXPECT_EQ(conf->to_string(0), "server;");
 }
 
@@ -40,20 +39,23 @@ TEST(ConfigTest, GetPortTestWithPort8080)
    *   port 8080;
    * }
    */
-  std::unique_ptr<config> inner_config = std::make_unique<config>();
-  std::unique_ptr<config> outer_config = std::make_unique<config>();
 	std::shared_ptr<config_statement> statement_foo_bar = std::make_shared<config_statement>();
-  std::shared_ptr<config_statement> statement_port_8080 = std::make_shared<config_statement>();
-  std::shared_ptr<config_statement> server_statement = std::make_shared<config_statement>();
-
-	statement_foo_bar->tokens_.push_back("foo");
+  statement_foo_bar->tokens_.push_back("foo");
 	statement_foo_bar->tokens_.push_back("bar");
-	statement_port_8080->tokens_.push_back("port");
+
+  std::shared_ptr<config_statement> statement_port_8080 = std::make_shared<config_statement>();
+  statement_port_8080->tokens_.push_back("port");
 	statement_port_8080->tokens_.push_back("8080");
+
+  std::unique_ptr<config> inner_config = std::make_unique<config>();
 	inner_config->statements_.emplace_back(statement_foo_bar);
 	inner_config->statements_.emplace_back(statement_port_8080);
+
+  std::shared_ptr<config_statement> server_statement = std::make_shared<config_statement>();
 	server_statement->tokens_.push_back("server");
 	server_statement->child_block_ = std::move(inner_config);
+
+  std::unique_ptr<config> outer_config = std::make_unique<config>();
 	outer_config->statements_.emplace_back(server_statement);
 
 	EXPECT_EQ(outer_config->get_port(), 8080);
@@ -66,16 +68,19 @@ TEST(ConfigTest, GetPortTestWithoutPort)
    *   foo bar;
    * }
    */
-  std::unique_ptr<config> inner_config = std::make_unique<config>();
-  std::unique_ptr<config> outer_config = std::make_unique<config>();
-	std::shared_ptr<config_statement> statement_foo_bar = std::make_shared<config_statement>();
-  std::shared_ptr<config_statement> server_statement = std::make_shared<config_statement>();
 
+	std::shared_ptr<config_statement> statement_foo_bar = std::make_shared<config_statement>();
 	statement_foo_bar->tokens_.push_back("foo");
 	statement_foo_bar->tokens_.push_back("bar");
+  
+  std::unique_ptr<config> inner_config = std::make_unique<config>();
 	inner_config->statements_.emplace_back(statement_foo_bar);
+  
+  std::shared_ptr<config_statement> server_statement = std::make_shared<config_statement>();
 	server_statement->tokens_.push_back("server");
 	server_statement->child_block_ = std::move(inner_config);
+
+  std::unique_ptr<config> outer_config = std::make_unique<config>();
 	outer_config->statements_.emplace_back(server_statement);
 
 	EXPECT_EQ(outer_config->get_port(), -1);
