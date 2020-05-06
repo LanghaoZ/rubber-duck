@@ -229,6 +229,21 @@ TEST_F(StaticRequestHandlerTest, StaticReqNoFile)
   EXPECT_EQ(rep_.status, reply::not_found);
 }
 
+TEST_F(StaticRequestHandlerTest, StaticReqFooFile) 
+{
+  req_.uri = "/static/file.foo";
+  handler_.handle_request(req_, rep_);
+
+  f_.open("http/server/public/file.foo");
+  std::string content;
+  char c;
+  while (f_.get(c)) content += c;
+  f_.close();
+  
+  EXPECT_EQ(rep_.status, reply::ok);
+  EXPECT_EQ(rep_.content, content);
+}
+
 } // namespace request_handler
 } // namespace server
 } // namespace http

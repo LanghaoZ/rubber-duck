@@ -28,6 +28,12 @@ TEST(RequestHandlerTest, TargetBaseUrlIsAssigned)
   EXPECT_EQ(mock_request_handler.location_, "/base/");
 }
 
+TEST(RequestHandlerTest, NoURLTest) 
+{
+  mock_request_handler mock_request_handler("");
+  EXPECT_TRUE(mock_request_handler.can_handle("/1"));
+}
+
 TEST(RequestHandlerTest, CanHandleRoot) 
 {
   mock_request_handler mock_request_handler("/");
