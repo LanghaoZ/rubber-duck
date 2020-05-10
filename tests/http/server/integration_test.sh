@@ -82,7 +82,7 @@ fi
 
 # echo test
 curl "http://localhost:8080/echo/" -o echo.out
-expected=$'GET /echo/ HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: curl/7.58.0\r\nAccept: */*\r\n\r\n'
+expected=$'GET /echo/ HTTP/1.1\r\nAccept: */*\r\nHost: localhost:8080\r\nUser-Agent: curl/7.58.0\r\n\r\n'
 echo -n "$expected" > expected.out
 
 diff expected.out echo.out
@@ -96,7 +96,7 @@ fi
 # check the response for bad request
 result=$(echo -n 'GET / HHTP/1.1\r\nHost: www.rubber-duck.com\r\nConnection: close\r\n\r\n' | nc localhost 8080)
 echo -n "$result" > bad_request.out
-expected=$'HTTP/1.1 400 Bad Request\r\nContent-Length: 89\r\nContent-Type: text/html\r\n\r\n<html><head><title>Bad Request</title></head><body><h1>400 Bad Request</h1></body></html>'
+expected=$'HTTP/1.1 400 Bad Request\r\nContent-Type: text/html\r\nContent-Length: 89\r\n\r\n<html><head><title>Bad Request</title></head><body><h1>400 Bad Request</h1></body></html>'
 echo -n "$expected" > expected.out
 diff expected.out bad_request.out
 if [ "$?" -eq "0" ]; then
@@ -128,6 +128,6 @@ if [ "$errors" -eq "0" ]; then
   echo "Passed all integration tests"
   exit 0
 else
-  echo "Failed $errors test case(s) out of total $num_tsts tests."
+  echo "Failed $errors test case(s) out of $num_tsts tests."
   exit 1
 fi

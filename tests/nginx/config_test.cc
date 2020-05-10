@@ -3,6 +3,7 @@
 #include "nginx/config.h"
 #include "nginx/config_parser.h"
 #include "nginx/config_statement.h"
+#include "nginx/location.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -86,30 +87,24 @@ TEST(ConfigTest, GetPortTestWithoutPort)
 	EXPECT_EQ(outer_config->get_port(), -1);
 }
 
-TEST(ConfigTest, GetServersTest) 
+TEST(ConfigTest, GetLocationsTest) 
 {
   /**
-   * server {
-   *   handler static;
-   *   location /static1/ {
-   *     root ./public/public1;
-   *   }
-   *   location /static2/ {
-   *     root ./public/public2;
-   *   }
-   * } 
+   * location /static1/ static_handler {
+   *   root ./public/public1;
+   * }
+   * location /static2/ static_handler {
+   *   root ./public/public2;
+   * }
    */
   std::unique_ptr<config> server_config = std::make_unique<config>();
-  std::unique_ptr<config> server_child_config = std::make_unique<config>();
   std::unique_ptr<config> root1_config = std::make_unique<config>();
   std::unique_ptr<config> root2_config = std::make_unique<config>();
   std::shared_ptr<config_statement> root1_statement = std::make_shared<config_statement>();
   std::shared_ptr<config_statement> root2_statement = std::make_shared<config_statement>();
   std::shared_ptr<config_statement> location1_statement = std::make_shared<config_statement>();
   std::shared_ptr<config_statement> location2_statement = std::make_shared<config_statement>();
-  std::shared_ptr<config_statement> handler_statement = std::make_shared<config_statement>();
-  std::shared_ptr<config_statement> server_statement = std::make_shared<config_statement>();
-
+  
   root1_statement->tokens_.push_back("root");
   root1_statement->tokens_.push_back("./public/public1");
   
@@ -121,33 +116,26 @@ TEST(ConfigTest, GetServersTest)
 
   location1_statement->tokens_.push_back("location");
   location1_statement->tokens_.push_back("/static1/");
+  location1_statement->tokens_.push_back("static_handler");
   location1_statement->child_block_ = std::move(root1_config);
 
   location2_statement->tokens_.push_back("location");
   location2_statement->tokens_.push_back("/static2/");
+  location2_statement->tokens_.push_back("static_handler");
   location2_statement->child_block_ = std::move(root2_config);
 
-  handler_statement->tokens_.push_back("handler");
-  handler_statement->tokens_.push_back("static");
+  server_config->statements_.emplace_back(location1_statement);
+  server_config->statements_.emplace_back(location2_statement);
 
-  server_child_config->statements_.emplace_back(handler_statement);
-  server_child_config->statements_.emplace_back(location1_statement);
-  server_child_config->statements_.emplace_back(location2_statement);
+  std::vector<nginx::location> locations = server_config->get_locations();
 
-  server_statement->tokens_.push_back("server");
-  server_statement->child_block_ = std::move(server_child_config);
-
-  server_config->statements_.emplace_back(server_statement);
-
-  std::vector<nginx::server> servers = server_config->get_servers();
-
-  EXPECT_EQ(servers.size(), 1);
-  EXPECT_EQ(servers[0].handler, "static");
-  EXPECT_EQ(servers[0].locations.size(), 2);
-  EXPECT_EQ(servers[0].locations[0].value, "/static1/");
-  EXPECT_EQ(servers[0].locations[0].root, "./public/public1");
-  EXPECT_EQ(servers[0].locations[1].value, "/static2/");
-  EXPECT_EQ(servers[0].locations[1].root, "./public/public2");
+  EXPECT_EQ(locations.size(), 2);
+  EXPECT_EQ(locations[0].path, "/static1/");
+  EXPECT_EQ(locations[0].handler, "static_handler");
+  EXPECT_EQ(locations[0].root, "./public/public1");
+  EXPECT_EQ(locations[1].path, "/static2/");
+  EXPECT_EQ(locations[1].handler, "static_handler");
+  EXPECT_EQ(locations[1].root, "./public/public2");
 }
 
 } // namespace nginx

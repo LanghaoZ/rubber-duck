@@ -48,15 +48,16 @@ TEST_F(NginxConfigParserTest, MultipleTokensConfig)
 TEST_F(NginxConfigParserTest, NoTokenConfig) 
 {
 	EXPECT_FALSE(parser_.parse("nginx/onfigs/no_token.conf", &out_config_));
+}
 
 TEST_F(NginxConfigParserTest, UnmatchedBracketsConfig) 
 {
 	EXPECT_FALSE(parser_.parse("nginx/configs/unmatched_brackets.conf", &out_config_));
-}}
+}
+
 TEST_F(NginxConfigParserTest, NoSemicolonConfig) 
 {
 	EXPECT_FALSE(parser_.parse("nginx/configs/no_semicolon.conf", &out_config_));
 }
-
 
 } // namespace nginx

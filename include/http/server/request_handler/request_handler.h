@@ -13,8 +13,9 @@
 
 #include <string>
 #include <functional>
-#include "http/server/reply.h"
+#include "http/server/response.h"
 #include "http/server/request.h"
+#include "nginx/config.h"
 
 namespace http {
 namespace server {
@@ -25,15 +26,18 @@ class request_handler
 {
 public:
 
-  request_handler(const std::string& location);
+  // All subclasses must implement a static construction method
+  // static request_handler init(const nginx::config& config);  // passes the parsed block
 
-  bool can_handle(const std::string& url);
+  /**
+   * Handle a request and produce a response.
+   * All subclasses implement a method to process requests.
+   */
+  virtual response handle_request(const request& req) = 0;
 
-  /// Handle a request and produce a reply.
-  virtual void handle_request(const request& req, reply& rep) = 0;
-
-  // url base path to handle
-  std::string location_;
+protected:
+  request_handler(const std::string& path);
+  std::string path_;
 
 };
 

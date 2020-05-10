@@ -19,7 +19,7 @@ public:
   server(const server&) = delete;
   server& operator=(const server&) = delete;
 
-  server(short port, std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers);
+  server(short port);
 
   /// Run the server's io_service loop.
   void run();
@@ -45,10 +45,6 @@ private:
 
   /// The next socket to be accepted.
   tcp::socket socket_;
-
-  /// The handler for all incoming requests.
-  /// request path -> handler
-  std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers_;
   
 };
 

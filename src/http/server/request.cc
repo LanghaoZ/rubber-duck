@@ -3,20 +3,25 @@
 namespace http {
 namespace server {
 
-size_t request::get_content_length()
+std::string request::method_type_as_string(method_type method)
 {
-  
-  int contentLength = 0;
-  for (int i = 0; i < headers.size(); i++) 
+  switch (method)
   {
-    if (headers[i].name.compare(
-      header::field_name_type_as_string(header::content_length)) == 0) 
-    {
-      contentLength = std::stoi(headers[i].value);
-    }
+    case http_get:    return "GET";
+    case http_post:   return "POST";
+    case http_put:    return "PUT";
+    case http_delete: return "DELETE";
+    default:          return "";
   }
+}
 
-  return contentLength;
+request::method_type request::string_as_method_type(const std::string& method)
+{
+  if (method == "GET")    return http_get;
+  if (method == "POST")   return http_post;
+  if (method == "PUT")    return http_put;
+  if (method == "DELETE") return http_delete;
+  return unknown;
 }
 
 std::string request::to_string() const
@@ -25,10 +30,11 @@ std::string request::to_string() const
 
   res += "\r\n";
 
-  for (int i = 0; i < headers.size(); i++) {
-    res += headers[i].name;
+  for (auto& it : headers)
+  {
+    res += it.first;
     res += ": ";
-    res += headers[i].value;
+    res += it.second;
     res += "\r\n";
   }
 
@@ -42,7 +48,7 @@ std::string request::to_string() const
 std::string request::to_digest() const
 {
   std::string res = "";
-  res += method;
+  res += request::method_type_as_string(method);
   res += " ";
 
   res += uri;
@@ -54,6 +60,21 @@ std::string request::to_digest() const
   res += std::to_string(http_version_minor);
 
   return res;
+}
+
+size_t request::get_content_length() const
+{
+  
+  int content_length = 0;
+
+  auto it = headers.find(header::field_name_type_as_string(header::content_length));
+
+  if (it != headers.end())
+  {
+    content_length = std::stoi(it->second);
+  }
+
+  return content_length;
 }
 
 } // namespace server

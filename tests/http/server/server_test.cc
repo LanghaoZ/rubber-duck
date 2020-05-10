@@ -10,8 +10,7 @@ namespace server {
 
 void server_8080_thread()
 {
-  std::vector<std::shared_ptr<request_handler::request_handler>> request_handlers;
-  server s(8080, request_handlers);
+  server s(8080);
   s.run();
 }
 
@@ -58,8 +57,7 @@ TEST(ServerTest, ServerReadsDataFromClient)
 
 void server_8081_thread()
 {
-  std::vector<std::shared_ptr<request_handler::request_handler>> request_handlers;
-  server s(8081, request_handlers);
+  server s(8081);
   s.run();
 }
 

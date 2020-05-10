@@ -1,5 +1,5 @@
 
-// reply.cc
+// response.cc
 // ~~~~~~~~~
 //
 // Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
@@ -8,7 +8,7 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include "http/server/reply.h"
+#include "http/server/response.h"
 #include <string>
 
 namespace http {
@@ -49,41 +49,41 @@ const std::string bad_gateway =
 const std::string service_unavailable =
   "HTTP/1.1 503 Service Unavailable\r\n";
 
-boost::asio::const_buffer to_buffer(reply::status_type status)
+boost::asio::const_buffer to_buffer(response::status_code status)
 {
   switch (status)
   {
-  case reply::ok:
+  case response::ok:
     return boost::asio::buffer(ok);
-  case reply::created:
+  case response::created:
     return boost::asio::buffer(created);
-  case reply::accepted:
+  case response::accepted:
     return boost::asio::buffer(accepted);
-  case reply::no_content:
+  case response::no_content:
     return boost::asio::buffer(no_content);
-  case reply::multiple_choices:
+  case response::multiple_choices:
     return boost::asio::buffer(multiple_choices);
-  case reply::moved_permanently:
+  case response::moved_permanently:
     return boost::asio::buffer(moved_permanently);
-  case reply::moved_temporarily:
+  case response::moved_temporarily:
     return boost::asio::buffer(moved_temporarily);
-  case reply::not_modified:
+  case response::not_modified:
     return boost::asio::buffer(not_modified);
-  case reply::bad_request:
+  case response::bad_request:
     return boost::asio::buffer(bad_request);
-  case reply::unauthorized:
+  case response::unauthorized:
     return boost::asio::buffer(unauthorized);
-  case reply::forbidden:
+  case response::forbidden:
     return boost::asio::buffer(forbidden);
-  case reply::not_found:
+  case response::not_found:
     return boost::asio::buffer(not_found);
-  case reply::internal_server_error:
+  case response::internal_server_error:
     return boost::asio::buffer(internal_server_error);
-  case reply::not_implemented:
+  case response::not_implemented:
     return boost::asio::buffer(not_implemented);
-  case reply::bad_gateway:
+  case response::bad_gateway:
     return boost::asio::buffer(bad_gateway);
-  case reply::service_unavailable:
+  case response::service_unavailable:
     return boost::asio::buffer(service_unavailable);
   default:
     return boost::asio::buffer(internal_server_error);
@@ -99,24 +99,25 @@ const char crlf[] = { '\r', '\n' };
 
 } // namespace misc_strings
 
-std::vector<boost::asio::const_buffer> reply::to_buffers()
+std::vector<boost::asio::const_buffer> response::to_buffers()
 {
   std::vector<boost::asio::const_buffer> buffers;
-  buffers.push_back(status_strings::to_buffer(status));
-  for (std::size_t i = 0; i < headers.size(); ++i)
+  buffers.push_back(status_strings::to_buffer(code));
+  
+  for (auto& it : headers)
   {
-    header& h = headers[i];
-    buffers.push_back(boost::asio::buffer(h.name));
+    buffers.push_back(boost::asio::buffer(it.first));
     buffers.push_back(boost::asio::buffer(misc_strings::name_value_separator));
-    buffers.push_back(boost::asio::buffer(h.value));
+    buffers.push_back(boost::asio::buffer(it.second));
     buffers.push_back(boost::asio::buffer(misc_strings::crlf));
   }
+  
   buffers.push_back(boost::asio::buffer(misc_strings::crlf));
-  buffers.push_back(boost::asio::buffer(content));
+  buffers.push_back(boost::asio::buffer(body));
   return buffers;
 }
 
-namespace stock_replies {
+namespace stock_responses {
 
 const char ok[] = "";
 const char created[] =
@@ -195,41 +196,41 @@ const char service_unavailable[] =
   "<body><h1>503 Service Unavailable</h1></body>"
   "</html>";
 
-std::string to_string(reply::status_type status)
+std::string to_string(response::status_code status)
 {
   switch (status)
   {
-  case reply::ok:
+  case response::ok:
     return ok;
-  case reply::created:
+  case response::created:
     return created;
-  case reply::accepted:
+  case response::accepted:
     return accepted;
-  case reply::no_content:
+  case response::no_content:
     return no_content;
-  case reply::multiple_choices:
+  case response::multiple_choices:
     return multiple_choices;
-  case reply::moved_permanently:
+  case response::moved_permanently:
     return moved_permanently;
-  case reply::moved_temporarily:
+  case response::moved_temporarily:
     return moved_temporarily;
-  case reply::not_modified:
+  case response::not_modified:
     return not_modified;
-  case reply::bad_request:
+  case response::bad_request:
     return bad_request;
-  case reply::unauthorized:
+  case response::unauthorized:
     return unauthorized;
-  case reply::forbidden:
+  case response::forbidden:
     return forbidden;
-  case reply::not_found:
+  case response::not_found:
     return not_found;
-  case reply::internal_server_error:
+  case response::internal_server_error:
     return internal_server_error;
-  case reply::not_implemented:
+  case response::not_implemented:
     return not_implemented;
-  case reply::bad_gateway:
+  case response::bad_gateway:
     return bad_gateway;
-  case reply::service_unavailable:
+  case response::service_unavailable:
     return service_unavailable;
   default:
     return internal_server_error;
@@ -238,16 +239,13 @@ std::string to_string(reply::status_type status)
 
 } // namespace stock_replies
 
-reply reply::stock_reply(reply::status_type status)
+response response::stock_response(response::status_code code)
 {
-  reply rep;
-  rep.status = status;
-  rep.content = stock_replies::to_string(status);
-  rep.headers.resize(2);
-  rep.headers[0].name = header::field_name_type_as_string(header::content_length);
-  rep.headers[0].value = std::to_string(rep.content.size());
-  rep.headers[1].name = header::field_name_type_as_string(header::content_type);
-  rep.headers[1].value = header::field_value_type_as_string(header::text_html);
+  response rep;
+  rep.code = code;
+  rep.body = stock_responses::to_string(code);
+  rep.headers[header::field_name_type_as_string(header::content_length)] = std::to_string(rep.body.size());
+  rep.headers[header::field_name_type_as_string(header::content_type)] = header::field_value_type_as_string(header::text_html);
   return rep;
 }
 

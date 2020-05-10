@@ -48,7 +48,7 @@ add_library(
   src/http/server/request_parser.cc 
   src/http/server/header.cc 
   src/http/server/request.cc 
-  src/http/server/reply.cc 
+  src/http/server/response.cc 
   src/http/server/session_manager.cc 
   src/http/server/request_handler/request_handler.cc 
   src/http/server/request_handler/request_handler_factory.cc 
@@ -79,15 +79,13 @@ target_link_libraries(
 
 # add executables for tests
 add_executable(server_test tests/http/server/server_test.cc)
-target_link_libraries(server_test server_lib logging_lib Boost::system Boost::thread Boost::regex Boost::log_setup Boost::log gtest_main)
+target_link_libraries(server_test server_lib logging_lib config_parser_lib Boost::system Boost::thread Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(session_test tests/http/server/session_test.cc)
-target_link_libraries(session_test server_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
+target_link_libraries(session_test server_lib logging_lib config_parser_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(request_parser_test tests/http/server/request_parser_test.cc)
 target_link_libraries(request_parser_test server_lib logging_lib gtest_main Boost::system)
-add_executable(reply_test tests/http/server/reply_test.cc)
-target_link_libraries(reply_test server_lib logging_lib gtest_main Boost::system)
-add_executable(request_handler_test tests/http/server/request_handler/request_handler_test.cc)
-target_link_libraries(request_handler_test server_lib logging_lib gtest_main Boost::system)
+add_executable(response_test tests/http/server/response_test.cc)
+target_link_libraries(response_test server_lib logging_lib gtest_main Boost::system)
 add_executable(header_test tests/http/server/header_test.cc)
 target_link_libraries(header_test server_lib logging_lib gtest_main)
 add_executable(config_parser_test tests/nginx/config_parser_test.cc)
@@ -97,11 +95,11 @@ target_link_libraries(config_statement_test config_parser_lib logging_lib gtest_
 add_executable(config_test tests/nginx/config_test.cc)
 target_link_libraries(config_test config_parser_lib logging_lib gtest_main gmock_main)
 add_executable(echo_request_handler_test tests/http/server/request_handler/echo_request_handler_test.cc)
-target_link_libraries(echo_request_handler_test server_lib logging_lib gtest_main Boost::system)
+target_link_libraries(echo_request_handler_test server_lib config_parser_lib logging_lib gtest_main Boost::system)
 add_executable(static_request_handler_test tests/http/server/request_handler/static_request_handler_test.cc)
-target_link_libraries(static_request_handler_test server_lib logging_lib gtest_main Boost::system)
+target_link_libraries(static_request_handler_test server_lib config_parser_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(request_handler_factory_test tests/http/server/request_handler/request_handler_factory_test.cc)
-target_link_libraries(request_handler_factory_test server_lib logging_lib gtest_main Boost::system config_parser_lib)
+target_link_libraries(request_handler_factory_test server_lib config_parser_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(mime_types_test tests/http/server/mime_types_test.cc)
 target_link_libraries(mime_types_test server_lib logging_lib gtest_main Boost::system)
 add_executable(request_test tests/http/server/request_test.cc)
@@ -114,8 +112,7 @@ gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/t
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-gtest_discover_tests(reply_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-gtest_discover_tests(request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(response_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(header_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_statement_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(config_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -132,6 +129,9 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/configs/integration_test
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/public DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
 add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_BINARY_DIR}/integration_test/integration_test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+# add public folder
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/public DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 # Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
 generate_coverage_report(
@@ -145,8 +145,7 @@ generate_coverage_report(
     session_test 
     config_parser_test 
     request_parser_test 
-    reply_test 
-    request_handler_test 
+    response_test 
     header_test 
     config_test 
     config_statement_test 

@@ -1,5 +1,8 @@
+#include <algorithm>
+#include <iostream>
 #include "nginx/config.h"
 #include "nginx/config_statement.h"
+#include "nginx/location.h"
 
 namespace nginx {
 
@@ -47,56 +50,40 @@ int config::get_port()
   return (port >= 0 && port <= 0xffff) ? port : err_not_found;
 }
 
-std::vector<server> config::get_servers()
+std::vector<location> config::get_locations() const
 {
   
-  std::vector<server> servers;
+  std::vector<location> locations;
 
   for (int i = 0; i < statements_.size(); i++)
   {
   
-    if (statements_[i].get()->tokens_[0].compare("server") == 0)
+    if (statements_[i].get()->tokens_[0] == "location")
     {
+      location location;
+      location.path = statements_[i].get()->tokens_[1];
+      location.path.erase(std::remove(location.path.begin(), location.path.end(),'\"'), location.path.end());
+      location.handler = statements_[i].get()->tokens_[2];
       
-      server server;
-
-      std::vector<std::shared_ptr<config_statement>> server_statements 
+      std::vector<std::shared_ptr<config_statement>> location_statements 
         = statements_[i].get()->child_block_.get()->statements_;
 
-      for (int j = 0; j < server_statements.size(); j++)
+      for (int j = 0; j < location_statements.size(); j++)
       {
-        
-        if (server_statements[j].get()->tokens_[0].compare("handler") == 0)
+        if (location_statements[j].get()->tokens_[0] == "root")
         {
-          server.handler = server_statements[j].get()->tokens_[1];
-        }
-        else if (server_statements[j].get()->tokens_[0].compare("location") == 0)
-        {
-          location location;
-          location.value = server_statements[j].get()->tokens_[1];
-
-          std::vector<std::shared_ptr<config_statement>> location_statements 
-            = server_statements[j].get()->child_block_.get()->statements_;
-
-          for (int k = 0; k < location_statements.size(); k++)
-          {
-            if (location_statements[k].get()->tokens_[0].compare("root") == 0)
-            {
-              location.root = location_statements[k].get()->tokens_[1];
-            }
-          }
-
-          server.locations.push_back(location);
+          location.root = location_statements[j].get()->tokens_[1];
+          location.root.erase(std::remove(location.root.begin(), location.root.end(),'\"'), location.root.end());
         }
       }
 
-      servers.push_back(server);
+      locations.push_back(location);
 
     }
     
   }
 
-  return servers;
+  return locations;
 }
 
 } // namspace nginx

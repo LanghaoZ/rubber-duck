@@ -1,34 +1,41 @@
 #include "http/server/request_handler/echo_request_handler.h"
 #include "http/server/request.h"
-#include "http/server/reply.h"
+#include "http/server/response.h"
+#include "nginx/config.h"
+#include "nginx/location.h"
 
 namespace http {
 namespace server {
 namespace request_handler {
 
-echo_request_handler::echo_request_handler(const std::string& location)
-  : request_handler(location)
+std::shared_ptr<echo_request_handler> echo_request_handler::init(const nginx::config& config)
 {
-
+  std::vector<nginx::location> locations = config.get_locations();
+  nginx::location location = locations[0];
+  return std::make_shared<echo_request_handler>(location.path);
 }
 
-void echo_request_handler::handle_request(const request& req, reply& rep)
+echo_request_handler::echo_request_handler(const std::string& path)
+  : request_handler(path)
+{
+}
+
+response echo_request_handler::handle_request(const request& req)
 {
 
-  // set response status
-  rep.status = http::server::reply::ok;
+  response res;
 
-  // set response header
-  rep.headers.resize(2);
-  rep.headers[0].name = header::field_name_type_as_string(header::content_type);
-  rep.headers[0].value = header::field_value_type_as_string(header::text_plain);
-  rep.headers[1].name = header::field_name_type_as_string(header::content_length);
+  // set response status
+  res.code = http::server::response::ok;
 
   // set response content
-  rep.content = req.to_string();
+  res.body = req.to_string();
   
-  // update content size in response header
-  rep.headers[1].value = std::to_string(rep.content.size());
+  // set response header
+  res.headers[header::field_name_type_as_string(header::content_type)] = header::field_value_type_as_string(header::text_plain);
+  res.headers[header::field_name_type_as_string(header::content_length)] = std::to_string(res.body.size());
+  
+  return res;
 }
 
 } // namespace request_handler

@@ -89,6 +89,16 @@ private:
     expecting_newline_2,
     expecting_newline_3
   } state_;
+
+  /// temporary storage for method string
+  std::string method_;
+
+  /// temporary storage for request header name
+  std::string header_name_;
+
+  /// temporary storage for request header value
+  std::string header_value_;
+
 };
 
 } // namespace server

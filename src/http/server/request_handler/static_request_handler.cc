@@ -1,28 +1,39 @@
 #include <fstream>
 #include "http/server/request_handler/static_request_handler.h"
 #include "http/server/request.h"
-#include "http/server/reply.h"
+#include "http/server/response.h"
 #include "http/server/mime_types.h"
 #include "http/server/header.h"
+#include "logging/logging.h"
+#include "nginx/config.h"
+#include "nginx/location.h"
 
 namespace http {
 namespace server {
 namespace request_handler {
 
-static_request_handler::static_request_handler(const std::string& location, const std::string& root)
-  : request_handler(location),
-    root_(root)
+std::shared_ptr<static_request_handler> static_request_handler::init(const nginx::config& config)
 {
-
+  std::vector<nginx::location> locations = config.get_locations();
+  nginx::location location = locations[0];
+  return std::make_shared<static_request_handler>(location.path, location.root);
 }
 
-void static_request_handler::handle_request(const request& req, reply& rep)
+static_request_handler::static_request_handler(const std::string& path, const std::string& root)
+  : request_handler(path),
+    root_(root)
+{
+}
+
+response static_request_handler::handle_request(const request& req)
 {
 
+  response res;
+
   std::string request_path;
-  if (!preprocess_request_path(req, rep, request_path))
+  if (!preprocess_request_path(req, res, request_path))
   {
-    return;
+    return res;
   }
   
   std::string extension = find_file_extension(request_path);
@@ -32,28 +43,28 @@ void static_request_handler::handle_request(const request& req, reply& rep)
   std::ifstream is(full_path.c_str(), std::ios::in | std::ios::binary);
   if (!is)
   {
-    rep = reply::stock_reply(reply::not_found);
-    return;
+    res = response::stock_response(response::not_found);
+    return res;
   }
 
-  // Fill out the reply to be sent to the client.
-  rep.status = reply::ok;
+  // Fill out the response to be sent to the client.
+  res.code = response::ok;
   char buf[512];
   while (is.read(buf, sizeof(buf)).gcount() > 0)
-    rep.content.append(buf, is.gcount());
-  rep.headers.resize(2);
-  rep.headers[0].name = header::field_name_type_as_string(header::content_length);
-  rep.headers[0].value = std::to_string(rep.content.size());
-  rep.headers[1].name = header::field_name_type_as_string(header::content_type);
-  rep.headers[1].value = mime_types::extension_to_type(extension);
+    res.body.append(buf, is.gcount());
+
+  res.headers[header::field_name_type_as_string(header::content_length)] = std::to_string(res.body.size());
+  res.headers[header::field_name_type_as_string(header::content_type)] = mime_types::extension_to_type(extension);
+  
+  return res;
 }
 
-bool static_request_handler::preprocess_request_path(const request& req, reply& rep, std::string& request_path)
+bool static_request_handler::preprocess_request_path(const request& req, response& res, std::string& request_path)
 {
   // decode url to path
   if (!url_decode(req.uri, request_path))
   {
-    rep = reply::stock_reply(reply::bad_request);
+    res = response::stock_response(response::bad_request);
     return false;
   }
 
@@ -61,7 +72,7 @@ bool static_request_handler::preprocess_request_path(const request& req, reply& 
   if (request_path.empty() || request_path[0] != '/'
       || request_path.find("..") != std::string::npos)
   {
-    rep = reply::stock_reply(reply::bad_request);
+    res = response::stock_response(response::bad_request);
     return false;
   }
 
@@ -89,7 +100,7 @@ std::string static_request_handler::find_file_extension(const std::string& reque
 
 std::string static_request_handler::translate_request_path(const std::string& request_path)
 {
-  return root_ + request_path.substr(location_.size() - 1);
+  return root_ + request_path.substr(path_.size());
 }
 
 bool static_request_handler::url_decode(const std::string& in, std::string& out)

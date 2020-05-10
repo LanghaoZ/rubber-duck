@@ -7,6 +7,7 @@
 #include "http/server/request_handler/echo_request_handler.h"
 #include "http/server/request_handler/static_request_handler.h"
 #include "nginx/config_parser.h"
+#include "nginx/location.h"
 
 namespace http {
 namespace server {
@@ -19,28 +20,19 @@ TEST(RequestHandlerFactoryTest, GeneratesOneEchoOneStaticRequestHandler)
 
   parser.parse("http/server/configs/request_handler_factory_test.conf", &config);
 
-  std::vector<std::shared_ptr<request_handler>> request_handlers 
-    = request_handler_factory::create_request_handlers(config);
+  request_handler_factory::get_instance().init(config.get_locations());
 
-  EXPECT_EQ(request_handlers.size(), 3);
+  auto echo_request_handler_ptr = request_handler_factory::get_instance().dispatch("/echo");
+  EXPECT_EQ(typeid(*echo_request_handler_ptr), typeid(echo_request_handler));
 
-  int num_echo_request_handler = 0;
-  int num_static_request_handler = 0;
+  auto static_request_handler_ptr_1 = request_handler_factory::get_instance().dispatch("/static1/index.html");
+  EXPECT_EQ(typeid(*static_request_handler_ptr_1), typeid(static_request_handler));
+  
+  auto static_request_handler_ptr_2 = request_handler_factory::get_instance().dispatch("/static2/does-not-exist.txt");
+  EXPECT_EQ(typeid(*static_request_handler_ptr_2), typeid(static_request_handler));
 
-  for (int i = 0; i < request_handlers.size(); i++)
-  {
-    if (typeid(*request_handlers[i]) == typeid(echo_request_handler))
-    {
-      num_echo_request_handler++;
-    }
-    else if (typeid(*request_handlers[i]) == typeid(static_request_handler))
-    {
-      num_static_request_handler++;
-    }
-  }
-
-  EXPECT_EQ(num_echo_request_handler, 1);
-  EXPECT_EQ(num_static_request_handler, 2);
+  auto invalid_request_handler = request_handler_factory::get_instance().dispatch("/invalid_route");
+  EXPECT_EQ(invalid_request_handler, nullptr);
 }
 
 } // namespace request_handler

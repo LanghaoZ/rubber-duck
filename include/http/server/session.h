@@ -7,7 +7,7 @@
 #include <unordered_map> 
 #include "request.h"
 #include "request_parser.h"
-#include "reply.h"
+#include "response.h"
 #include "header.h"
 #include "request_handler/request_handler.h"
 
@@ -26,7 +26,7 @@ public:
 
   /// Construct a connection with the given socket.
   explicit session(boost::asio::ip::tcp::socket socket, 
-    session_manager& manager, std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers);
+    session_manager& manager);
 
   /// Start the first asynchronous operation for the connection.
   virtual void start();
@@ -54,9 +54,6 @@ private:
   void read_request_body(const std::string& extra_data_read, 
     std::function<std::string (size_t length)> reader);
 
-  /// find the request handler that can handle the request
-  bool find_request_handler(std::shared_ptr<request_handler::request_handler>& request_handler);
-
   /// find remote endpoint address
   std::string find_client_address();
 
@@ -65,9 +62,6 @@ private:
 
   /// The manager for this connection.
   session_manager& session_manager_;
-
-  /// The handler used to process the incoming request.
-  std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers_;
 
   /// Buffer for incoming data.
   boost::array<char, 8192> buffer_;
@@ -79,7 +73,7 @@ private:
   request_parser request_parser_;
 
   /// The reply to be sent back to the client.
-  reply reply_;
+  response res_;
 
 };
 

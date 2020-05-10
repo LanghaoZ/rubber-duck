@@ -3,7 +3,7 @@
 namespace http {
 namespace server {
 
-const char* header::field_name_type_as_string(field_name_type type)
+std::string header::field_name_type_as_string(field_name_type type)
 {
   switch (type) {
     case accept:          return "Accept";
@@ -17,7 +17,7 @@ const char* header::field_name_type_as_string(field_name_type type)
   }
 }
 
-const char* header::field_value_type_as_string(field_value_type type)
+std::string header::field_value_type_as_string(field_value_type type)
 {
   switch (type) 
   {

@@ -1,5 +1,5 @@
 //
-// reply.h
+// response.h
 // ~~~~~~~~~
 //
 // Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
@@ -8,22 +8,23 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef HTTP_REPLY_H
-#define HTTP_REPLY_H
+#ifndef HTTP_RESPONSE_H
+#define HTTP_RESPONSE_H
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <boost/asio.hpp>
 #include "header.h"
 
 namespace http {
 namespace server {
 
-/// A reply to be sent to a client.
-struct reply
+/// A response to be sent to a client.
+struct response
 {
-  /// The status of the reply.
-  enum status_type
+  /// The status of the response.
+  enum status_code
   {
     ok = 200,
     created = 201,
@@ -41,24 +42,24 @@ struct reply
     not_implemented = 501,
     bad_gateway = 502,
     service_unavailable = 503
-  } status;
+  } code;
 
-  /// The headers to be included in the reply.
-  std::vector<header> headers;
+  /// The headers to be included in the response.
+  std::unordered_map<std::string, std::string> headers;
 
-  /// The content to be sent in the reply.
-  std::string content;
+  /// The content to be sent in the response.
+  std::string body;
 
-  /// Convert the reply into a vector of buffers. The buffers do not own the
-  /// underlying memory blocks, therefore the reply object must remain valid and
+  /// Convert the response into a vector of buffers. The buffers do not own the
+  /// underlying memory blocks, therefore the response object must remain valid and
   /// not be changed until the write operation has completed.
   std::vector<boost::asio::const_buffer> to_buffers();
 
-  /// Get a stock reply.
-  static reply stock_reply(status_type status);
+  /// Get a stock response.
+  static response stock_response(status_code code);
 };
 
 } // namespace server
 } // namespace http
 
-#endif // HTTP_REPLY_H
+#endif // HTTP_RESPONSE_H

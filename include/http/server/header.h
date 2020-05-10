@@ -29,7 +29,7 @@ struct header
     content_length,
     content_type
   };
-  static const char* field_name_type_as_string(field_name_type type);
+  static std::string field_name_type_as_string(field_name_type type);
 
   // possible field values of request/response header
   enum field_value_type
@@ -37,10 +37,8 @@ struct header
     text_plain,
     text_html
   };
-  static const char* field_value_type_as_string(field_value_type type);
-
-  std::string name;
-  std::string value;
+  static std::string field_value_type_as_string(field_value_type type);
+  
 };
 
 } // namespace server

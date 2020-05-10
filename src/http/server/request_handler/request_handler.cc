@@ -10,7 +10,7 @@
 
 #include <boost/asio.hpp>
 #include "http/server/request_handler/request_handler.h"
-#include "http/server/reply.h"
+#include "http/server/response.h"
 #include "http/server/request.h"
 #include "http/server/header.h"
 
@@ -18,20 +18,9 @@ namespace http {
 namespace server {
 namespace request_handler {
 
-request_handler::request_handler(const std::string& location)
-  : location_(location)
+request_handler::request_handler(const std::string& path)
+  : path_(path)
 {
-
-}
-
-bool request_handler::can_handle(const std::string& url)
-{
-  if (url.find(location_) == 0) 
-  {
-    return true;
-  }
-
-  return false;
 }
 
 } // namespace request_handler

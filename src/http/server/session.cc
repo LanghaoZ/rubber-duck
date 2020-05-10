@@ -7,10 +7,11 @@
 #include <cstdlib>
 #include "http/server/session.h"
 #include "http/server/request_parser.h"
-#include "http/server/reply.h"
+#include "http/server/response.h"
 #include "http/server/request_handler/request_handler.h"
 #include "http/server/session_manager.h"
 #include "logging/logging.h"
+#include "http/server/request_handler/request_handler_factory.h"
 
 using boost::asio::ip::tcp;
 
@@ -18,11 +19,9 @@ namespace http {
 namespace server {
 
 session::session(boost::asio::ip::tcp::socket socket,
-  session_manager& manager,
-  std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers)
+  session_manager& manager)
   : socket_(std::move(socket)),
-    session_manager_(manager),
-    request_handlers_(request_handlers)
+    session_manager_(manager)
 {
 }
 
@@ -67,15 +66,17 @@ int session::handle_read(const boost::system::error_code& ec,
       logging::logging::log_info(request_.to_digest() + " FROM " + find_client_address() + "\n");
       logging::logging::log_trace(request_.to_string());
       
-      std::shared_ptr<request_handler::request_handler> request_handler;
-      if (find_request_handler(request_handler))
+      std::shared_ptr<request_handler::request_handler> request_handler
+        = request_handler::request_handler_factory::get_instance().dispatch(request_.uri);
+
+      if (request_handler != nullptr)
       {
-        request_handler.get()->handle_request(request_, reply_);
+        res_ = request_handler.get()->handle_request(request_);
       }
       else 
       {
         // no request handler can handle the uri
-        reply_ = http::server::reply::stock_reply(http::server::reply::not_found);
+        res_ = http::server::response::stock_response(http::server::response::not_found);
       }
 
       do_write();
@@ -87,7 +88,7 @@ int session::handle_read(const boost::system::error_code& ec,
       logging::logging::log_trace(request_.to_string());
 
       // respond with 400 status
-      reply_ = http::server::reply::stock_reply(http::server::reply::bad_request);
+      res_ = http::server::response::stock_response(http::server::response::bad_request);
       do_write();
       return 1;
     }
@@ -110,7 +111,7 @@ int session::handle_read(const boost::system::error_code& ec,
 void session::do_write()
 {
   auto self(shared_from_this());
-  boost::asio::async_write(socket_, reply_.to_buffers(),
+  boost::asio::async_write(socket_, res_.to_buffers(),
     [this, self](boost::system::error_code ec, std::size_t)
     {
       if (!ec)
@@ -155,22 +156,6 @@ void session::read_request_body(const std::string& extra_data_read,
     addtional_data += reader(content_length_left);
   }
   request_.body = extra_data_read + addtional_data;
-}
-
-bool session::find_request_handler(std::shared_ptr<request_handler::request_handler>& request_handler)
-{
-  for (int i = 0; i < request_handlers_.size(); i++)
-  {
-    if (request_handlers_[i].get()->can_handle(request_.uri))
-    {
-      logging::logging::log_debug("Located request handler");
-      request_handler = request_handlers_[i];
-      return true;
-    }
-  }
-
-  logging::logging::log_warning("Cannot find the corresponding request handler");
-  return false;
 }
 
 std::string session::find_client_address()

@@ -21,13 +21,12 @@ using boost::asio::ip::tcp;
 namespace http {
 namespace server {
 
-server::server(short port, std::vector<std::shared_ptr<request_handler::request_handler>>& request_handlers)
+server::server(short port)
   : io_service_(),
     signals_(io_service_),
     socket_(io_service_),
     acceptor_(io_service_, tcp::endpoint(tcp::v4(), port)),
-    session_manager_(),
-    request_handlers_(request_handlers)
+    session_manager_()
 {
 
   // Register to handle the signals that indicate when the server should exit.
@@ -65,7 +64,7 @@ void server::do_accept()
     if (!ec)
     {
       session_manager_.start(std::make_shared<session>(
-        std::move(socket_), session_manager_, request_handlers_));
+        std::move(socket_), session_manager_));
       
     }
 

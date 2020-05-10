@@ -24,7 +24,6 @@ protected:
 
   boost::asio::io_service io_service_;
   boost::asio::ip::tcp::socket socket_;
-  std::vector<std::shared_ptr<request_handler::request_handler>> handlers_;
   session_manager manager_;
 };
 
@@ -32,7 +31,7 @@ TEST_F(SessionTest, HandlesGoodRequest)
 {
 
   // instantiate session
-  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_, handlers_);
+  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_);
   
   // send a message to the server
   boost::array<char, 8192> buffer;
@@ -54,7 +53,7 @@ TEST_F(SessionTest, HandlesGoodRequest)
 TEST_F(SessionTest, HandlesIntermediateRequest) 
 {
   // instantiate session
-  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_, handlers_);
+  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_);
   
   // send a message to the server
   boost::array<char, 8192> buffer;
@@ -73,7 +72,7 @@ TEST_F(SessionTest, HandlesBadRequest)
 {
 
   // instantiate session
-  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_, handlers_);
+  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_);
   
   // send a message to the server
   boost::array<char, 8192> buffer;
@@ -91,7 +90,7 @@ TEST_F(SessionTest, HandlesBadRequest)
 TEST_F(SessionTest, HandlesErrorRequest) 
 {
   // instantiate session
-  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_, handlers_);
+  std::shared_ptr<session> s = std::make_shared<session>(std::move(socket_), manager_);
 
   error_code ec = errc::make_error_code(errc::not_supported);
   EXPECT_EQ(s->handle_read(ec, 0), 1);

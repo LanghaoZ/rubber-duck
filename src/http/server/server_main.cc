@@ -19,6 +19,7 @@
 #include "nginx/config.h"
 #include "nginx/config_statement.h"
 #include "logging/logging.h"
+#include "nginx/location.h"
 
 using boost::asio::ip::tcp;
 
@@ -43,7 +44,6 @@ int main(int argc, char* argv[])
     {
       logging::logging::log_trace("Successfully parsed Nginx config: " + std::string(argv[1]));
     } 
-    
     else 
     {
       logging::logging::log_error("Failed to parse Nginx config:" + std::string(argv[1]));
@@ -57,11 +57,11 @@ int main(int argc, char* argv[])
     }
 
     // create request handlers
-    std::vector<std::shared_ptr<http::server::request_handler::request_handler>> request_handlers = http::server::request_handler::request_handler_factory::create_request_handlers(config);
-    logging::logging::log_debug("Instantiated request handlers");
+    http::server::request_handler::request_handler_factory::get_instance().init(config.get_locations());
+    logging::logging::log_info("Instantiated request handlers");
 
     // run the server
-    http::server::server s(port, request_handlers);
+    http::server::server s(port);
     logging::logging::log_info("Server initiated on port " + std::to_string(port));
 
     s.run();

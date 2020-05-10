@@ -24,6 +24,9 @@ request_parser::request_parser()
 void request_parser::reset()
 {
   state_ = method_start;
+  method_ = "";
+  header_name_ = "";
+  header_value_ = "";
 }
 
 request_parser::result_type request_parser::consume(request& req, char input)
@@ -38,13 +41,14 @@ request_parser::result_type request_parser::consume(request& req, char input)
     else
     {
       state_ = method;
-      req.method.push_back(input);
+      method_.push_back(input);
       return indeterminate;
     }
   case method:
     if (input == ' ')
     {
       state_ = uri;
+      req.method = request::string_as_method_type(method_);
       return indeterminate;
     }
     else if (!is_char(input) || is_ctl(input) || is_tspecial(input))
@@ -53,7 +57,7 @@ request_parser::result_type request_parser::consume(request& req, char input)
     }
     else
     {
-      req.method.push_back(input);
+      method_.push_back(input);
       return indeterminate;
     }
   case uri:
@@ -202,8 +206,7 @@ request_parser::result_type request_parser::consume(request& req, char input)
     }
     else
     {
-      req.headers.push_back(header());
-      req.headers.back().name.push_back(input);
+      header_name_.push_back(input);
       state_ = header_name;
       return indeterminate;
     }
@@ -224,7 +227,7 @@ request_parser::result_type request_parser::consume(request& req, char input)
     else
     {
       state_ = header_value;
-      req.headers.back().value.push_back(input);
+      header_value_.push_back(input);
       return indeterminate;
     }
   case header_name:
@@ -239,7 +242,7 @@ request_parser::result_type request_parser::consume(request& req, char input)
     }
     else
     {
-      req.headers.back().name.push_back(input);
+    header_name_.push_back(input);
       return indeterminate;
     }
   case space_before_header_value:
@@ -255,6 +258,9 @@ request_parser::result_type request_parser::consume(request& req, char input)
   case header_value:
     if (input == '\r')
     {
+      req.headers[header_name_] = header_value_;
+      header_name_ = "";
+      header_value_ = "";
       state_ = expecting_newline_2;
       return indeterminate;
     }
@@ -264,7 +270,7 @@ request_parser::result_type request_parser::consume(request& req, char input)
     }
     else
     {
-      req.headers.back().value.push_back(input);
+      header_value_.push_back(input);
       return indeterminate;
     }
   case expecting_newline_2:
