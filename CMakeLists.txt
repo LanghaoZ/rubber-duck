@@ -54,6 +54,7 @@ add_library(
   src/http/server/request_handler/request_handler_factory.cc 
   src/http/server/request_handler/static_request_handler.cc 
   src/http/server/request_handler/echo_request_handler.cc 
+  src/http/server/request_handler/not_found_request_handler.cc
   src/http/server/mime_types.cc
 )
 add_library(

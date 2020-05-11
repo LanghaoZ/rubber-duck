@@ -5,6 +5,7 @@
 #include "nginx/location.h"
 #include "http/server/request_handler/echo_request_handler.h"
 #include "http/server/request_handler/static_request_handler.h"
+#include "http/server/request_handler/not_found_request_handler.h"
 #include "logging/logging.h"
 
 namespace http {
@@ -13,8 +14,6 @@ namespace request_handler {
 
 void request_handler_factory::init(const std::vector<nginx::location>& locations)
 {
-
-  logging::logging::log_debug("initializing factory");
 
   for (int i = 0; i < locations.size(); i++)
   {
@@ -50,7 +49,9 @@ void request_handler_factory::init(const std::vector<nginx::location>& locations
     }
 
   }
-  
+
+  http_404_request_handler_ = std::make_shared<not_found_request_handler>("");
+
 }
 
 std::shared_ptr<request_handler> request_handler_factory::dispatch(const std::string& uri)
@@ -73,7 +74,7 @@ std::shared_ptr<request_handler> request_handler_factory::dispatch(const std::st
   }
 
   logging::logging::log_warning("Cannot find the corresponding request handler");
-  return nullptr;
+  return http_404_request_handler_;
 }
 
 std::shared_ptr<request_handler> request_handler_factory::create_handler(const nginx::config& config)

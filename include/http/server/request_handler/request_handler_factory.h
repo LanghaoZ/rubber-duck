@@ -41,7 +41,10 @@ private:
   std::shared_ptr<request_handler> create_handler(const nginx::config& config);
 
   // hash map that maps from location path to request handler
-  std::unordered_map<std::string, std::shared_ptr<request_handler>> request_handlers_; 
+  std::unordered_map<std::string, std::shared_ptr<request_handler>> request_handlers_;
+  
+  // 404 handler
+  std::shared_ptr<request_handler> http_404_request_handler_; 
 };
 
 } // namespace request_handler

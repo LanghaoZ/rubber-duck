@@ -8,6 +8,7 @@
 #include "nginx/config.h"
 #include "nginx/config_parser.h"
 #include "http/server/request_handler/request_handler_factory.h"
+#include "nginx/location.h"
 
 using namespace boost::system;
 
@@ -20,6 +21,7 @@ protected:
     : io_service_(), 
       socket_(io_service_)
   {
+    request_handler::request_handler_factory::get_instance().init(std::vector<nginx::location>());
   }
 
   boost::asio::io_service io_service_;

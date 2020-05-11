@@ -69,15 +69,7 @@ int session::handle_read(const boost::system::error_code& ec,
       std::shared_ptr<request_handler::request_handler> request_handler
         = request_handler::request_handler_factory::get_instance().dispatch(request_.uri);
 
-      if (request_handler != nullptr)
-      {
-        res_ = request_handler.get()->handle_request(request_);
-      }
-      else 
-      {
-        // no request handler can handle the uri
-        res_ = http::server::response::stock_response(http::server::response::not_found);
-      }
+      res_ = request_handler.get()->handle_request(request_);
 
       do_write();
       return 0;

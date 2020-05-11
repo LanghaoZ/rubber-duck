@@ -6,6 +6,7 @@
 #include "http/server/request_handler/request_handler.h"
 #include "http/server/request_handler/echo_request_handler.h"
 #include "http/server/request_handler/static_request_handler.h"
+#include "http/server/request_handler/not_found_request_handler.h"
 #include "nginx/config_parser.h"
 #include "nginx/location.h"
 
@@ -31,8 +32,8 @@ TEST(RequestHandlerFactoryTest, GeneratesOneEchoOneStaticRequestHandler)
   auto static_request_handler_ptr_2 = request_handler_factory::get_instance().dispatch("/static2/does-not-exist.txt");
   EXPECT_EQ(typeid(*static_request_handler_ptr_2), typeid(static_request_handler));
 
-  auto invalid_request_handler = request_handler_factory::get_instance().dispatch("/invalid_route");
-  EXPECT_EQ(invalid_request_handler, nullptr);
+  auto invalid_request_handler_ptr = request_handler_factory::get_instance().dispatch("/invalid_route");
+  EXPECT_EQ(typeid(*invalid_request_handler_ptr), typeid(not_found_request_handler));
 }
 
 } // namespace request_handler
