@@ -1,6 +1,7 @@
 #include "http/server/request_handler/echo_request_handler.h"
 #include "http/server/request.h"
 #include "http/server/response.h"
+#include "http/server/server.h"
 #include "nginx/config.h"
 #include "nginx/location.h"
 
@@ -27,6 +28,10 @@ response echo_request_handler::handle_request(const request& req)
 
   // set response status
   res.code = http::server::response::ok;
+
+  //Adding these two lines will cause echo request handler test to fail
+  server::request_count++;
+  server::request_db[req.uri][response::ok]++;
 
   // set response content
   res.body = req.to_string();

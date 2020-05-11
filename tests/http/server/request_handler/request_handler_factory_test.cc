@@ -3,9 +3,11 @@
 #include "http/server/request_handler/request_handler_factory.h"
 #include "nginx/config.h"
 #include "nginx/config_statement.h"
+#include "http/server/server.h"
 #include "http/server/request_handler/request_handler.h"
 #include "http/server/request_handler/echo_request_handler.h"
 #include "http/server/request_handler/static_request_handler.h"
+#include "http/server/request_handler/status_request_handler.h"
 #include "http/server/request_handler/not_found_request_handler.h"
 #include "nginx/config_parser.h"
 #include "nginx/location.h"
@@ -26,6 +28,9 @@ TEST(RequestHandlerFactoryTest, GeneratesOneEchoOneStaticRequestHandler)
   auto echo_request_handler_ptr = request_handler_factory::get_instance().dispatch("/echo");
   EXPECT_EQ(typeid(*echo_request_handler_ptr), typeid(echo_request_handler));
 
+  auto status_request_handler_ptr = request_handler_factory::get_instance().dispatch("/status");
+  EXPECT_EQ(typeid(*status_request_handler_ptr), typeid(status_request_handler));
+
   auto static_request_handler_ptr_1 = request_handler_factory::get_instance().dispatch("/static1/index.html");
   EXPECT_EQ(typeid(*static_request_handler_ptr_1), typeid(static_request_handler));
   
@@ -34,6 +39,7 @@ TEST(RequestHandlerFactoryTest, GeneratesOneEchoOneStaticRequestHandler)
 
   auto invalid_request_handler_ptr = request_handler_factory::get_instance().dispatch("/invalid_route");
   EXPECT_EQ(typeid(*invalid_request_handler_ptr), typeid(not_found_request_handler));
+
 }
 
 } // namespace request_handler

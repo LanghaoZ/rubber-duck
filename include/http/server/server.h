@@ -1,6 +1,7 @@
 #ifndef HTTP_SERVER_H
 #define HTTP_SERVER_H
 
+#include <cstdlib>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <unordered_map> 
@@ -23,6 +24,9 @@ public:
 
   /// Run the server's io_service loop.
   void run();
+
+  static int request_count;
+  static std::map<std::string, std::map<int, int>> request_db;
 
 private:
   /// Perform an asynchronous accept operation.

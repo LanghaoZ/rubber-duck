@@ -9,6 +9,7 @@
 //
 
 #include <iostream>
+#include <cstdlib>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "http/server/server.h"
@@ -85,6 +86,11 @@ void server::do_await_stop()
       logging::logging::log_signal();
     });
 }
+
+int server::request_count = 0;
+
+std::map<std::string, std::map<int, int>> server::request_db;
+
 
 } // namespace server
 } // namespace http

@@ -5,6 +5,7 @@
 #include "nginx/location.h"
 #include "http/server/request_handler/echo_request_handler.h"
 #include "http/server/request_handler/static_request_handler.h"
+#include "http/server/request_handler/status_request_handler.h"
 #include "http/server/request_handler/not_found_request_handler.h"
 #include "logging/logging.h"
 
@@ -90,6 +91,9 @@ std::shared_ptr<request_handler> request_handler_factory::create_handler(const n
   else if (location.handler == "static_handler")
   {
     return static_request_handler::init(config);
+  }
+  else if (location.handler == "status_handler") {
+    return status_request_handler::init(config);
   }
 
   return nullptr;

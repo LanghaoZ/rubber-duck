@@ -1,6 +1,7 @@
 #include "http/server/request_handler/not_found_request_handler.h"
 #include "nginx/config.h"
 #include "nginx/location.h"
+#include "http/server/server.h"
 
 namespace http {
 namespace server {
@@ -20,6 +21,8 @@ not_found_request_handler::not_found_request_handler(const std::string& path)
 
 response not_found_request_handler::handle_request(const request& req)
 {
+  server::request_count++;
+  server::request_db[req.uri][response::not_found]++;
   return http::server::response::stock_response(http::server::response::not_found);
 }
 

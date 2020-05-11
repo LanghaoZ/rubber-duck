@@ -53,7 +53,8 @@ add_library(
   src/http/server/request_handler/request_handler.cc 
   src/http/server/request_handler/request_handler_factory.cc 
   src/http/server/request_handler/static_request_handler.cc 
-  src/http/server/request_handler/echo_request_handler.cc 
+  src/http/server/request_handler/echo_request_handler.cc
+  src/http/server/request_handler/status_request_handler.cc
   src/http/server/request_handler/not_found_request_handler.cc
   src/http/server/mime_types.cc
 )
@@ -96,7 +97,7 @@ target_link_libraries(config_statement_test config_parser_lib logging_lib gtest_
 add_executable(config_test tests/nginx/config_test.cc)
 target_link_libraries(config_test config_parser_lib logging_lib gtest_main gmock_main)
 add_executable(echo_request_handler_test tests/http/server/request_handler/echo_request_handler_test.cc)
-target_link_libraries(echo_request_handler_test server_lib config_parser_lib logging_lib gtest_main Boost::system)
+target_link_libraries(echo_request_handler_test server_lib config_parser_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(static_request_handler_test tests/http/server/request_handler/static_request_handler_test.cc)
 target_link_libraries(static_request_handler_test server_lib config_parser_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
 add_executable(request_handler_factory_test tests/http/server/request_handler/request_handler_factory_test.cc)

@@ -7,6 +7,7 @@
 #include "logging/logging.h"
 #include "nginx/config.h"
 #include "nginx/location.h"
+#include "http/server/server.h"
 
 namespace http {
 namespace server {
@@ -30,9 +31,12 @@ response static_request_handler::handle_request(const request& req)
 
   response res;
 
+  server::request_count++;
+  
   std::string request_path;
   if (!preprocess_request_path(req, res, request_path))
   {
+    server::request_db[req.uri][response::bad_request]++;
     return res;
   }
   
@@ -44,6 +48,7 @@ response static_request_handler::handle_request(const request& req)
   if (!is)
   {
     res = response::stock_response(response::not_found);
+    server::request_db[req.uri][response::not_found]++;
     return res;
   }
 
@@ -55,6 +60,8 @@ response static_request_handler::handle_request(const request& req)
 
   res.headers[header::field_name_type_as_string(header::content_length)] = std::to_string(res.body.size());
   res.headers[header::field_name_type_as_string(header::content_type)] = mime_types::extension_to_type(extension);
+
+  server::request_db[req.uri][response::ok]++;
   
   return res;
 }
