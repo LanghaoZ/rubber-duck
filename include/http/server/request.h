@@ -33,32 +33,32 @@ struct request
     unknown
   } method;
 
-  // The path of the request
+  /// The path of the request
   std::string uri;
 
-  // A map of headers, for convenient lookup ("Content-Type", "Cookie", etc)
+  /// A map of headers, for convenient lookup ("Content-Type", "Cookie", etc)
   std::unordered_map<std::string, std::string> headers;
 
-  // The content of the request
+  /// The content of the request
   std::string body;
 
   int http_version_major;
 
   int http_version_minor;
 
-  // string representation of this request object
+  /// String representation of this request object
   std::string to_string() const;
 
-  // string representation of the first line of this request (e.g. GET / HTTP/1.1)
+  /// String representation of the first line of this request (e.g. GET / HTTP/1.1)
   std::string to_digest() const;
 
-  // get the value of Content-Length haeder field
+  /// Get the value of Content-Length haeder field
   size_t get_content_length() const;
 
-  // convert method type to string
+  /// Convert method type to string
   static std::string method_type_as_string(method_type method);
 
-  // convert string to method type
+  /// Convert string to method type
   static method_type string_as_method_type(const std::string& method);
   
 };

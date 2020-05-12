@@ -84,6 +84,7 @@ std::shared_ptr<request_handler> request_handler_factory::create_handler(const n
   std::vector<nginx::location> locations = config.get_locations();
   nginx::location location = locations[0];
   
+  // Additional handlers can be added here for dispatch
   if (location.handler == "echo_handler")
   {
     return echo_request_handler::init(config);

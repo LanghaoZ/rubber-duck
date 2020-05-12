@@ -18,7 +18,7 @@ namespace server {
 
 struct header
 {
-  // possible field names of request/response header
+  /// possible field names of request/response header
   enum field_name_type 
   {
     accept,
@@ -29,9 +29,11 @@ struct header
     content_length,
     content_type
   };
+  
+  /// convert type to proper strings
   static std::string field_name_type_as_string(field_name_type type);
 
-  // possible field values of request/response header
+  /// possible field values of request/response header
   enum field_value_type
   {
     text_plain,

@@ -12,8 +12,10 @@ class static_request_handler : public request_handler
 {
 public:
 
+  /// Take config to construct a static request handler.
   static std::shared_ptr<static_request_handler> init(const nginx::config& config);
 
+  /// Take path and root and to give proper response to static request.
   static_request_handler(const std::string& path, const std::string& root);
 
   /// Handle a request and produce a response.

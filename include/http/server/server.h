@@ -20,6 +20,7 @@ public:
   server(const server&) = delete;
   server& operator=(const server&) = delete;
 
+  /// Construct a server with port
   server(short port);
 
   /// Run the server's io_service loop.
