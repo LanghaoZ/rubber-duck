@@ -108,6 +108,10 @@ add_executable(request_test tests/http/request/request_test.cc)
 target_link_libraries(request_test server_lib gtest_main Boost::system)
 add_executable(logging_test tests/logging/logging_test.cc)
 target_link_libraries(logging_test logging_lib gtest_main Boost::system Boost::regex Boost::log_setup Boost::log)
+add_executable(not_found_request_handler_test tests/http/request_handler/not_found_request_handler_test.cc)
+target_link_libraries(not_found_request_handler_test server_lib config_parser_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
+add_executable(status_request_handler_test tests/http/request_handler/status_request_handler_test.cc)
+target_link_libraries(status_request_handler_test server_lib config_parser_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
 
 # find google tests
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -124,6 +128,8 @@ gtest_discover_tests(request_handler_factory_test WORKING_DIRECTORY ${CMAKE_CURR
 gtest_discover_tests(mime_types_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(logging_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(not_found_request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(status_request_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # add integration test
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_test.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
@@ -157,4 +163,6 @@ generate_coverage_report(
     mime_types_test
     request_handler_factory_test
     logging_test
+    not_found_request_handler_test
+    status_request_handler_test
 )

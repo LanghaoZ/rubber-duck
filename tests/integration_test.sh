@@ -39,7 +39,6 @@ fi
 # explicit index html test
 curl "http://localhost:8080/static/index.html" -o explicit-index.html
 
-
 diff ./integration_test/public/index.html explicit-index.html
 if [ "$?" -eq "0" ]; then
   echo "explicit-index.html -> ok"
@@ -106,7 +105,6 @@ else
   errors=$((errors + 1))
 fi
 
-
 # check the response for not found
 curl "http://localhost:8080/" -o not_found.out
 expected=$'<html><head><title>Not Found</title></head><body><h1>404 Not Found</h1></body></html>'
@@ -119,11 +117,11 @@ else
   errors=$((errors + 1))
 fi
 
+# clean up
 kill -2 $pid
 rm rubber_duck.jpg rubber_duck.zip explicit-index.html implicit-index.html home.html text.txt echo.out bad_request.out expected.out not_found.out
 
-# report the test results
-# check if any error occur
+# check if any error occur and report the test results
 if [ "$errors" -eq "0" ]; then
   echo "Passed all integration tests"
   exit 0
