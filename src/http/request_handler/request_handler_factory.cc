@@ -10,7 +10,6 @@
 #include "logging/logging.h"
 
 namespace http {
-namespace server {
 namespace request_handler {
 
 request_handler_factory::request_handler_factory()
@@ -37,8 +36,8 @@ void request_handler_factory::init(const std::vector<nginx::location>& locations
     }
     
     // obtain ownwership of the request_handler pointer
-    std::shared_ptr<request_handler> handler 
-      = std::shared_ptr<request_handler>(create_handler(locations[i].path, locations[i].handler, config));
+    auto handler = std::shared_ptr<request_handler>(
+      create_handler(locations[i].path, locations[i].handler, config));
 
     if (handler != nullptr)
     {
@@ -94,5 +93,4 @@ request_handler* request_handler_factory::create_handler(const std::string& loca
 }
 
 } // namespace request_handler
-} // namespace server
 } // namespace http

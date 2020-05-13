@@ -1,7 +1,7 @@
 #include "http/request/request.h"
 
 namespace http {
-namespace server {
+namespace request {
 
 std::string request_to_string(const request& req)
 {
@@ -27,7 +27,7 @@ std::string request_to_string(const request& req)
 std::string request_to_digest(const request& req)
 {
   std::string res = "";
-  res += method_type_as_string(req.method);
+  res += method_type_to_string(req.method);
   res += " ";
 
   res += req.uri;
@@ -43,7 +43,7 @@ size_t get_request_content_length(const request& req)
   
   int content_length = 0;
 
-  auto it = req.headers.find(header::field_name_type_as_string(header::content_length));
+  auto it = req.headers.find(header::field_name_type_to_string(header::content_length));
 
   if (it != req.headers.end())
   {
@@ -53,5 +53,5 @@ size_t get_request_content_length(const request& req)
   return content_length;
 }
 
-} // namespace server
+} // namespace request
 } // namespace http

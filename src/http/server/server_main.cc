@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     }
 
     // create request handlers
-    http::server::request_handler::request_handler_factory::get_instance().init(config.get_locations());
+    http::request_handler::request_handler_factory::get_instance().init(config.get_locations());
     logging::logging::log_info("Instantiated request handlers");
 
     // run the server

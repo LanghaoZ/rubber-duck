@@ -4,7 +4,6 @@
 #include <string>
 
 namespace http {
-namespace server {
 
 enum method_type
 {
@@ -16,12 +15,11 @@ enum method_type
 };
 
 // convert method type to string
-std::string method_type_as_string(method_type method);
+std::string method_type_to_string(method_type method);
 
 // convert string to method type
-method_type string_as_method_type(const std::string& method);
+method_type string_to_method_type(const std::string& method);
 
-} // namespace server
 } // namespace http
 
 #endif // HTTP_REQUEST_H

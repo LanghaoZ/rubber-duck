@@ -12,7 +12,7 @@
 #include "http/session/session.h"
 
 namespace http {
-namespace server {
+namespace session {
 
 session_manager::session_manager()
 {
@@ -37,5 +37,5 @@ void session_manager::stop_all()
   sessions_.clear();
 }
 
-} // namespace server
+} // namespace session
 } // namespace http

@@ -13,7 +13,7 @@
 using namespace boost::system;
 
 namespace http {
-namespace server {
+namespace session {
 
 class SessionTest : public ::testing::Test {
 protected:
@@ -98,5 +98,5 @@ TEST_F(SessionTest, HandlesErrorRequest)
   EXPECT_EQ(s->handle_read(ec, 0), 1);
 }
 
-} // namespace server
+} // namespace session
 } // namespace http

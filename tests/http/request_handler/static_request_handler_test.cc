@@ -9,9 +9,9 @@
 #include "http/header.h"
 #include "http/request/request_parser.h"
 #include "http/status_code.h"
+#include "http/server/server.h"
 
 namespace http {
-namespace server {
 namespace request_handler {
 
 class StaticRequestHandlerTest : public ::testing::Test 
@@ -24,7 +24,7 @@ protected:
 
   std::ifstream f_;
   static_request_handler handler_;
-  request req_;
+  request::request req_;
   response res_;
 };
 
@@ -230,5 +230,4 @@ TEST_F(StaticRequestHandlerTest, StaticReqFooFile)
 }
 
 } // namespace request_handler
-} // namespace server
 } // namespace http

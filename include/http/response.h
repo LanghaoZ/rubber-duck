@@ -19,31 +19,31 @@
 #include "http/status_code.h"
 
 namespace http {
-namespace server {
 
-/// A response to be sent to a client.
+// A response to be sent to a client.
 struct response
 {
-  /// The status of the response.
+  // The status of the response.
   status_code code;
 
-  /// The headers to be included in the response.
+  // The headers to be included in the response.
   std::map<std::string, std::string> headers;
 
-  /// The content to be sent in the response.
+  // The content to be sent in the response.
   std::string body;
 
 };
 
-/// Convert the response into a vector of buffers. The buffers do not own the
-/// underlying memory blocks, therefore the response object must remain valid and
-/// not be changed until the write operation has completed.
+/**
+ * Convert the response into a vector of buffers. The buffers do not own the
+ * underlying memory blocks, therefore the response object must remain valid and
+ * not be changed until the write operation has completed.
+ */
 std::vector<boost::asio::const_buffer> response_to_buffers(const response& res);
 
-/// Get a stock response.
+// Get a stock response.
 response status_code_to_stock_response(const status_code& code);
 
-} // namespace server
 } // namespace http
 
 #endif // HTTP_RESPONSE_H

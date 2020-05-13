@@ -17,8 +17,6 @@
 #include "http/request_handler/request_handler.h"
 #include "logging/logging.h"
 
-using boost::asio::ip::tcp;
-
 namespace http {
 namespace server {
 
@@ -26,7 +24,7 @@ server::server(short port)
   : io_service_(),
     signals_(io_service_),
     socket_(io_service_),
-    acceptor_(io_service_, tcp::endpoint(tcp::v4(), port)),
+    acceptor_(io_service_, boost::asio::ip::tcp::endpoint(tcp::v4(), port)),
     session_manager_()
 {
 
@@ -64,7 +62,7 @@ void server::do_accept()
 
     if (!ec)
     {
-      session_manager_.start(std::make_shared<session>(
+      session_manager_.start(std::make_shared<session::session>(
         std::move(socket_), session_manager_));
       
     }
@@ -87,10 +85,24 @@ void server::do_await_stop()
     });
 }
 
+void server::update_request_history(const std::string& path, const status_code& code)
+{
+  request_count++;
+  request_db[path][code]++;
+}
+
+const std::map<std::string, std::map<status_code, int>>& server::get_request_db()
+{
+  return request_db;
+}
+
+int server::get_request_count()
+{
+  return request_count;
+}
+
 int server::request_count = 0;
-
-std::map<std::string, std::map<int, int>> server::request_db;
-
+std::map<std::string, std::map<status_code, int>> server::request_db;
 
 } // namespace server
 } // namespace http

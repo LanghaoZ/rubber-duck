@@ -18,10 +18,9 @@
 #include "nginx/config.h"
 
 namespace http {
-namespace server {
 namespace request_handler {
 
-/// The common handler for all incoming requests.
+// The common handler for all incoming requests.
 class request_handler
 {
 public:
@@ -33,12 +32,11 @@ public:
    * Handle a request and produce a response.
    * All subclasses implement a method to process requests.
    */
-  virtual response handle_request(const request& req) = 0;
+  virtual response handle_request(const request::request& req) = 0;
 
 };
 
 } // namespace request_handler
-} // namespace server
 } // namespace http
 
 #endif // HTTP_REQUEST_HANDLER_H

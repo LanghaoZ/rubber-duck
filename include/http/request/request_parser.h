@@ -15,27 +15,29 @@
 #include <tuple>
 
 namespace http {
-namespace server {
+namespace request {
 
 struct request;
 
-/// Parser for incoming requests.
+// Parser for incoming requests.
 class request_parser
 {
 public:
-  /// Construct ready to parse the request method.
+  // Construct ready to parse the request method.
   request_parser();
 
-  /// Reset to initial parser state.
+  // Reset to initial parser state.
   void reset();
 
-  /// Result of parse.
+  // Result of parse.
   enum result_type { good, bad, indeterminate };
 
-  /// Parse some data. The enum return value is good when a complete request has
-  /// been parsed, bad if the data is invalid, indeterminate when more data is
-  /// required. The InputIterator return value indicates how much of the input
-  /// has been consumed.
+  /**
+   * Parse some data. The enum return value is good when a complete request has
+   * been parsed, bad if the data is invalid, indeterminate when more data is
+   * required. The InputIterator return value indicates how much of the input
+   * has been consumed.
+   */ 
   template <typename InputIterator>
   std::tuple<result_type, InputIterator> parse(request& req,
       InputIterator begin, InputIterator end)
@@ -50,22 +52,22 @@ public:
   }
 
 private:
-  /// Handle the next character of input.
+  // Handle the next character of input.
   result_type consume(request& req, char input);
 
-  /// Check if a byte is an HTTP character.
+  // Check if a byte is an HTTP character.
   static bool is_char(int c);
 
-  /// Check if a byte is an HTTP control character.
+  // Check if a byte is an HTTP control character.
   static bool is_ctl(int c);
 
-  /// Check if a byte is defined as an HTTP tspecial character.
+  // Check if a byte is defined as an HTTP tspecial character.
   static bool is_tspecial(int c);
 
-  /// Check if a byte is a digit.
+  // Check if a byte is a digit.
   static bool is_digit(int c);
 
-  /// The current state of the parser.
+  // The current state of the parser.
   enum state
   {
     method_start,
@@ -90,22 +92,22 @@ private:
     expecting_newline_3
   } state_;
 
-  /// temporary storage for method string
+  // temporary storage for method string
   std::string method_;
 
-  /// temporary storage for request header name
+  // temporary storage for request header name
   std::string header_name_;
 
-  /// temporary storage for request header value
+  // temporary storage for request header value
   std::string header_value_;
 
-  /// temporary storage for http version
+  // temporary storage for http version
   int http_version_major_;
   int http_version_minor_;
 
 };
 
-} // namespace server
+} // namespace request
 } // namespace http
 
 #endif // HTTP_REQUEST_PARSER_H

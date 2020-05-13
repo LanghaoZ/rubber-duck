@@ -17,7 +17,7 @@
 using boost::asio::ip::tcp;
 
 namespace http {
-namespace server {
+namespace session {
 
 session::session(boost::asio::ip::tcp::socket socket,
   session_manager& manager)
@@ -54,11 +54,11 @@ int session::handle_read(const boost::system::error_code& ec,
   {
     char* start = buffer_.data();
     char* end = buffer_.data() + bytes_transferred;
-    http::server::request_parser::result_type result;
+    request::request_parser::result_type result;
     std::tie(result, start) = request_parser_.parse(
       request_, start, end);
 
-    if (result == http::server::request_parser::good)
+    if (result == request::request_parser::good)
     {
       // buffer may contain more data beyond end of request header
       // read more data from socket if necessary
@@ -75,7 +75,7 @@ int session::handle_read(const boost::system::error_code& ec,
       do_write();
       return 0;
     }
-    else if (result == http::server::request_parser::bad)
+    else if (result == request::request_parser::bad)
     {
       logging::logging::log_info(request_to_digest(request_) + " FROM " + find_client_address() + "\n");
       logging::logging::log_trace(request_to_string(request_));
@@ -94,7 +94,7 @@ int session::handle_read(const boost::system::error_code& ec,
   }
   else if (ec != boost::asio::error::operation_aborted)
   {
-    logging::logging::log_error("Operation aborted. Session Stopped");
+    logging::logging::log_warning("Closing session with " + find_client_address() + "\n");
     session_manager_.stop(shared_from_this());
   }
 
@@ -174,5 +174,5 @@ void session::set_buffer(boost::array<char, 8192>& buffer)
   buffer_ = buffer;
 }
 
-} // namespace server
+} // namespace session
 } // namespace http

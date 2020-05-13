@@ -1,9 +1,8 @@
 #include "http/header.h"
 
 namespace http {
-namespace server {
 
-std::string header::field_name_type_as_string(field_name_type type)
+std::string header::field_name_type_to_string(field_name_type type)
 {
   switch (type) {
     case accept:          return "Accept";
@@ -17,7 +16,7 @@ std::string header::field_name_type_as_string(field_name_type type)
   }
 }
 
-std::string header::field_value_type_as_string(field_value_type type)
+std::string header::field_value_type_to_string(field_value_type type)
 {
   switch (type) 
   {
@@ -27,5 +26,4 @@ std::string header::field_value_type_as_string(field_value_type type)
   }
 }
 
-} // namespace server
 } // namespace http

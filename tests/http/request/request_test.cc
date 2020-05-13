@@ -2,7 +2,7 @@
 #include "http/request/request.h"
 
 namespace http {
-namespace server {
+namespace request {
 
 class RequestTest : public ::testing::Test 
 {
@@ -53,5 +53,5 @@ TEST_F(RequestTest, ConvertsToString)
 
 }
 
-} // namespace server
+} // namespace request
 } // namespace http

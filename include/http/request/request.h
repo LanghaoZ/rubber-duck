@@ -18,9 +18,9 @@
 #include "http/method_type.h"
 
 namespace http {
-namespace server {
+namespace request {
 
-/// A request received from a client.
+// A request received from a client.
 struct request
 {
 
@@ -50,7 +50,7 @@ std::string request_to_digest(const request& req);
 // get the value of Content-Length haeder field
 size_t get_request_content_length(const request& req);
 
-} // namespace server
+} // namespace request
 } // namespace http
 
 #endif // HTTP_REQUEST_H

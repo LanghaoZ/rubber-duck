@@ -7,7 +7,6 @@
 #include "nginx/config.h"
 
 namespace http {
-namespace server {
 namespace request_handler {
 
 /**
@@ -47,7 +46,6 @@ private:
 };
 
 } // namespace request_handler
-} // namespace server
 } // namespace http
 
 #endif // HTTP_REQUEST_HANDLER_FACTORY_H

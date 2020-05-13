@@ -14,11 +14,10 @@
 #include <string>
 
 namespace http {
-namespace server {
 
 struct header
 {
-  /// possible field names of request/response header
+  // possible field names of request/response header
   enum field_name_type 
   {
     accept,
@@ -30,20 +29,20 @@ struct header
     content_type
   };
   
-  /// convert type to proper strings
-  static std::string field_name_type_as_string(field_name_type type);
+  // convert type to proper strings
+  static std::string field_name_type_to_string(field_name_type type);
 
-  /// possible field values of request/response header
+  // possible field values of request/response header
   enum field_value_type
   {
     text_plain,
     text_html
   };
-  static std::string field_value_type_as_string(field_value_type type);
+
+  static std::string field_value_type_to_string(field_value_type type);
   
 };
 
-} // namespace server
 } // namespace http
 
 #endif // HTTP_HEADER_H

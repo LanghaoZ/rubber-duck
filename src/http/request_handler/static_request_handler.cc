@@ -11,7 +11,6 @@
 #include "http/status_code.h"
 
 namespace http {
-namespace server {
 namespace request_handler {
 
 static_request_handler* static_request_handler::init(const std::string& location_path, const nginx::config& config)
@@ -25,17 +24,15 @@ static_request_handler::static_request_handler(const std::string& path, const st
 {
 }
 
-response static_request_handler::handle_request(const request& req)
+response static_request_handler::handle_request(const request::request& req)
 {
 
   response res;
-
-  server::request_count++;
   
   std::string request_path;
   if (!preprocess_request_path(req, res, request_path))
   {
-    server::request_db[req.uri][status_code::bad_request]++;
+    server::server::update_request_history(req.uri, status_code::bad_request);
     return res;
   }
   
@@ -47,7 +44,7 @@ response static_request_handler::handle_request(const request& req)
   if (!is)
   {
     res = status_code_to_stock_response(status_code::not_found);
-    server::request_db[req.uri][status_code::not_found]++;
+    server::server::update_request_history(req.uri, status_code::not_found);
     return res;
   }
 
@@ -57,15 +54,15 @@ response static_request_handler::handle_request(const request& req)
   while (is.read(buf, sizeof(buf)).gcount() > 0)
     res.body.append(buf, is.gcount());
 
-  res.headers[header::field_name_type_as_string(header::content_length)] = std::to_string(res.body.size());
-  res.headers[header::field_name_type_as_string(header::content_type)] = mime_types::extension_to_type(extension);
+  res.headers[header::field_name_type_to_string(header::content_length)] = std::to_string(res.body.size());
+  res.headers[header::field_name_type_to_string(header::content_type)] = extension_to_type(extension);
 
-  server::request_db[req.uri][status_code::ok]++;
+  server::server::update_request_history(req.uri, status_code::ok);
   
   return res;
 }
 
-bool static_request_handler::preprocess_request_path(const request& req, response& res, std::string& request_path)
+bool static_request_handler::preprocess_request_path(const request::request& req, response& res, std::string& request_path)
 {
   // decode url to path
   if (!url_decode(req.uri, request_path))
@@ -149,5 +146,4 @@ bool static_request_handler::url_decode(const std::string& in, std::string& out)
 }
 
 } // namespace request_handler
-} // namespace server
 } // namespace http

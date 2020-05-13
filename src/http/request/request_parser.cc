@@ -14,7 +14,7 @@
 #include "http/header.h"
 
 namespace http {
-namespace server {
+namespace request {
 
 request_parser::request_parser()
   : state_(method_start),
@@ -52,7 +52,7 @@ request_parser::result_type request_parser::consume(request& req, char input)
     if (input == ' ')
     {
       state_ = uri;
-      req.method = string_as_method_type(method_);
+      req.method = string_to_method_type(method_);
       return indeterminate;
     }
     else if (!is_char(input) || is_ctl(input) || is_tspecial(input))
@@ -322,5 +322,5 @@ bool request_parser::is_digit(int c)
   return c >= '0' && c <= '9';
 }
 
-} // namespace server
+} // namespace request
 } // namespace http

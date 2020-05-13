@@ -6,7 +6,6 @@
 #include "http/header.h"
 
 namespace http {
-namespace server {
 namespace request_handler {
 
 class EchoRequestHandlerTest : public ::testing::Test 
@@ -23,7 +22,7 @@ protected:
 
 TEST_F(EchoRequestHandlerTest, GetEchoingTest) 
 {
-  request req;
+  request::request req;
   req.method = http_get;
   req.uri = "/";
   req.version = "HTTP/1.1";
@@ -51,7 +50,7 @@ TEST_F(EchoRequestHandlerTest, GetEchoingTest)
 
 TEST_F(EchoRequestHandlerTest, AssignsRequestContentToResponseBody) 
 {
-  request req;
+  request::request req;
   req.method = http_post;
   req.uri = "/";
   req.version = "HTTP/1.1";
@@ -82,5 +81,4 @@ TEST_F(EchoRequestHandlerTest, AssignsRequestContentToResponseBody)
 }
 
 } // namespace request_handler
-} // namespace server
 } // namespace http

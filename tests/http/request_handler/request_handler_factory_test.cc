@@ -13,7 +13,6 @@
 #include "nginx/location.h"
 
 namespace http {
-namespace server {
 namespace request_handler {
 
 TEST(RequestHandlerFactoryTest, GeneratesOneEchoOneStaticRequestHandler) 
@@ -43,5 +42,4 @@ TEST(RequestHandlerFactoryTest, GeneratesOneEchoOneStaticRequestHandler)
 }
 
 } // namespace request_handler
-} // namespace server
 } // namespace http

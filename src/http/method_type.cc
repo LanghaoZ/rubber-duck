@@ -1,9 +1,8 @@
 #include "http/method_type.h"
 
 namespace http {
-namespace server {
 
-std::string method_type_as_string(method_type method)
+std::string method_type_to_string(method_type method)
 {
   switch (method)
   {
@@ -15,7 +14,7 @@ std::string method_type_as_string(method_type method)
   }
 }
 
-method_type string_as_method_type(const std::string& method)
+method_type string_to_method_type(const std::string& method)
 {
   if (method == "GET")    return http_get;
   if (method == "POST")   return http_post;
@@ -24,5 +23,4 @@ method_type string_as_method_type(const std::string& method)
   return http_invalid;
 }
 
-} // namespace server
 } // namespace http

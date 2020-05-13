@@ -4,7 +4,6 @@
 #include "http/status_code.h"
 
 namespace http {
-namespace server {
 
 class ResponseTest : public ::testing::Test 
 {
@@ -296,5 +295,4 @@ TEST_F(ResponseTest, HandlesConvertingReplyToBuffers)
   EXPECT_EQ(std::string(boost::asio::buffer_cast<const char*>(buffers[6]), boost::asio::buffer_size(buffers[6])), "");
 }
 
-} // namespace server
 } // namespace http

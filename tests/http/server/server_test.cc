@@ -31,8 +31,8 @@ TEST(ServerTest, ServerReadsDataFromClient)
     // https://www.boost.org/doc/libs/1_42_0/doc/html/boost_asio/example/http/client/sync_client.cpp  
     // connect to the server
     boost::asio::io_service c_io_service;
-    tcp::socket c_socket(c_io_service);
-    tcp::resolver resolver(c_io_service);
+    boost::asio::ip::tcp::socket c_socket(c_io_service);
+    boost::asio::ip::tcp::resolver resolver(c_io_service);
     boost::asio::connect(c_socket, resolver.resolve({"localhost", "8080"}));
 
     // send a message to the server
@@ -77,8 +77,8 @@ TEST(ServerTest, ServerReceivesSignalAndExits)
     // https://www.boost.org/doc/libs/1_42_0/doc/html/boost_asio/example/http/client/sync_client.cpp  
     // connect to the server
     boost::asio::io_service c_io_service;
-    tcp::socket c_socket(c_io_service);
-    tcp::resolver resolver(c_io_service);
+    boost::asio::ip::tcp::socket c_socket(c_io_service);
+    boost::asio::ip::tcp::resolver resolver(c_io_service);
     boost::asio::connect(c_socket, resolver.resolve({"localhost", "8081"}));
 
     std::raise(SIGTERM);

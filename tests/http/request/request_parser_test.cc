@@ -4,7 +4,7 @@
 #include "http/request/request.h"
 
 namespace http {
-namespace server {
+namespace request {
 
 class RequestParserTest : public ::testing::Test
 {
@@ -129,5 +129,5 @@ TEST_F(RequestParserTest, HasRequestBody)
   EXPECT_EQ(result_, request_parser::good);
 }
 
-} // namespace server
+} // namespace request
 } // namespace http

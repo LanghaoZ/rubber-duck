@@ -12,7 +12,6 @@
 #include <string>
 
 namespace http {
-namespace server {
 
 namespace status_strings {
 
@@ -246,10 +245,9 @@ response status_code_to_stock_response(const status_code& code)
   response rep;
   rep.code = code;
   rep.body = stock_responses::to_string(code);
-  rep.headers[header::field_name_type_as_string(header::content_length)] = std::to_string(rep.body.size());
-  rep.headers[header::field_name_type_as_string(header::content_type)] = header::field_value_type_as_string(header::text_html);
+  rep.headers[header::field_name_type_to_string(header::content_length)] = std::to_string(rep.body.size());
+  rep.headers[header::field_name_type_to_string(header::content_type)] = header::field_value_type_to_string(header::text_html);
   return rep;
 }
 
-} // namespace server
 } // namespace http

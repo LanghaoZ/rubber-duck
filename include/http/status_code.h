@@ -2,7 +2,6 @@
 #define HTTP_STATUS_CODE_H
 
 namespace http {
-namespace server {
 
 enum status_code
 {
@@ -24,7 +23,6 @@ enum status_code
   service_unavailable = 503
 };
 
-} // namespace server
 } // namespace http
 
 #endif // HTTP_STATUS_CODE_H
