@@ -5,9 +5,9 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <unordered_map> 
-#include "request_handler/request_handler.h"
-#include "session.h"
-#include "session_manager.h"
+#include "http/request_handler/request_handler.h"
+#include "http/session/session.h"
+#include "http/session/session_manager.h"
 
 using boost::asio::ip::tcp;
 

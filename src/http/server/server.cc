@@ -13,8 +13,8 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "http/server/server.h"
-#include "http/server/session.h"
-#include "http/server/request_handler/request_handler.h"
+#include "http/session/session.h"
+#include "http/request_handler/request_handler.h"
 #include "logging/logging.h"
 
 using boost::asio::ip::tcp;

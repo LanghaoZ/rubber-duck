@@ -3,7 +3,7 @@
 #include <unordered_map> 
 #include "gtest/gtest.h"
 #include "http/server/server.h"
-#include "http/server/request_handler/request_handler.h"
+#include "http/request_handler/request_handler.h"
 
 namespace http {
 namespace server {

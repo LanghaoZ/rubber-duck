@@ -44,19 +44,19 @@ include_directories(include)
 add_library(
   server_lib 
   src/http/server/server.cc 
-  src/http/server/session.cc 
-  src/http/server/request_parser.cc 
-  src/http/server/header.cc 
-  src/http/server/request.cc 
-  src/http/server/response.cc 
-  src/http/server/session_manager.cc 
-  src/http/server/request_handler/request_handler.cc 
-  src/http/server/request_handler/request_handler_factory.cc 
-  src/http/server/request_handler/static_request_handler.cc 
-  src/http/server/request_handler/echo_request_handler.cc
-  src/http/server/request_handler/status_request_handler.cc
-  src/http/server/request_handler/not_found_request_handler.cc
-  src/http/server/mime_types.cc
+  src/http/session/session.cc 
+  src/http/request/request_parser.cc 
+  src/http/header.cc 
+  src/http/request/request.cc 
+  src/http/method_type.cc
+  src/http/response.cc 
+  src/http/session/session_manager.cc 
+  src/http/request_handler/request_handler_factory.cc 
+  src/http/request_handler/static_request_handler.cc 
+  src/http/request_handler/echo_request_handler.cc
+  src/http/request_handler/status_request_handler.cc
+  src/http/request_handler/not_found_request_handler.cc
+  src/http/mime_types.cc
 )
 add_library(
   config_parser_lib 
@@ -82,13 +82,13 @@ target_link_libraries(
 # add executables for tests
 add_executable(server_test tests/http/server/server_test.cc)
 target_link_libraries(server_test server_lib logging_lib config_parser_lib Boost::system Boost::thread Boost::regex Boost::log_setup Boost::log gtest_main)
-add_executable(session_test tests/http/server/session_test.cc)
+add_executable(session_test tests/http/session/session_test.cc)
 target_link_libraries(session_test server_lib logging_lib config_parser_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
-add_executable(request_parser_test tests/http/server/request_parser_test.cc)
+add_executable(request_parser_test tests/http/request/request_parser_test.cc)
 target_link_libraries(request_parser_test server_lib logging_lib gtest_main Boost::system)
-add_executable(response_test tests/http/server/response_test.cc)
+add_executable(response_test tests/http/response_test.cc)
 target_link_libraries(response_test server_lib logging_lib gtest_main Boost::system)
-add_executable(header_test tests/http/server/header_test.cc)
+add_executable(header_test tests/http/header_test.cc)
 target_link_libraries(header_test server_lib logging_lib gtest_main)
 add_executable(config_parser_test tests/nginx/config_parser_test.cc)
 target_link_libraries(config_parser_test config_parser_lib logging_lib gtest_main)
@@ -96,15 +96,15 @@ add_executable(config_statement_test tests/nginx/config_statement_test.cc)
 target_link_libraries(config_statement_test config_parser_lib logging_lib gtest_main gmock_main)
 add_executable(config_test tests/nginx/config_test.cc)
 target_link_libraries(config_test config_parser_lib logging_lib gtest_main gmock_main)
-add_executable(echo_request_handler_test tests/http/server/request_handler/echo_request_handler_test.cc)
+add_executable(echo_request_handler_test tests/http/request_handler/echo_request_handler_test.cc)
 target_link_libraries(echo_request_handler_test server_lib config_parser_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
-add_executable(static_request_handler_test tests/http/server/request_handler/static_request_handler_test.cc)
+add_executable(static_request_handler_test tests/http/request_handler/static_request_handler_test.cc)
 target_link_libraries(static_request_handler_test server_lib config_parser_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
-add_executable(request_handler_factory_test tests/http/server/request_handler/request_handler_factory_test.cc)
+add_executable(request_handler_factory_test tests/http/request_handler/request_handler_factory_test.cc)
 target_link_libraries(request_handler_factory_test server_lib config_parser_lib logging_lib Boost::system Boost::regex Boost::log_setup Boost::log gtest_main)
-add_executable(mime_types_test tests/http/server/mime_types_test.cc)
+add_executable(mime_types_test tests/http/mime_types_test.cc)
 target_link_libraries(mime_types_test server_lib logging_lib gtest_main Boost::system)
-add_executable(request_test tests/http/server/request_test.cc)
+add_executable(request_test tests/http/request/request_test.cc)
 target_link_libraries(request_test server_lib gtest_main Boost::system)
 add_executable(logging_test tests/logging/logging_test.cc)
 target_link_libraries(logging_test logging_lib gtest_main Boost::system Boost::regex Boost::log_setup Boost::log)
@@ -126,9 +126,9 @@ gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 gtest_discover_tests(logging_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # add integration test
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/integration_test.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/configs/integration_test.conf DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/http/server/public DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_test.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_test.conf DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests/public DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/integration_test)
 add_test(NAME integration_test COMMAND ${BASH_PROGRAM} ${CMAKE_CURRENT_BINARY_DIR}/integration_test/integration_test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # add public folder

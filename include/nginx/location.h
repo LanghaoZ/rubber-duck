@@ -2,8 +2,8 @@
 #define NGINX_LOCATION_H
 
 #include <iostream>
-#include "config.h"
-#include "config_statement.h"
+#include "nginx/config.h"
+#include "nginx/config_statement.h"
 
 namespace nginx {
 

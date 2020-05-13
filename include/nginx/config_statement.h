@@ -16,6 +16,8 @@ public:
   virtual std::string to_string(int depth);
   std::vector<std::string> tokens_;
   std::unique_ptr<nginx::config> child_block_;
+
+  std::string get_root() const;
 };
 
 } // namespace nginx

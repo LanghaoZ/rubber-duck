@@ -8,7 +8,6 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <csignal>
-#include "http/server/request.h"
 
 using boost::asio::ip::tcp;
 

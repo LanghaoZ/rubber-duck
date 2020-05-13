@@ -62,6 +62,7 @@ std::vector<location> config::get_locations() const
     {
       location location;
       location.path = statements_[i].get()->tokens_[1];
+      // remove double quotes
       location.path.erase(std::remove(location.path.begin(), location.path.end(),'\"'), location.path.end());
       location.handler = statements_[i].get()->tokens_[2];
       
@@ -72,8 +73,7 @@ std::vector<location> config::get_locations() const
       {
         if (location_statements[j].get()->tokens_[0] == "root")
         {
-          location.root = location_statements[j].get()->tokens_[1];
-          location.root.erase(std::remove(location.root.begin(), location.root.end(),'\"'), location.root.end());
+          location.root = location_statements[j].get()->get_root();
         }
       }
 

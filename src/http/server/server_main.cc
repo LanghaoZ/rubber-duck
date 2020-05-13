@@ -12,9 +12,9 @@
 #include <csignal>
 #include <boost/asio.hpp>
 #include "http/server/server.h"
-#include "http/server/session.h"
-#include "http/server/request_handler/request_handler_factory.h"
-#include "http/server/request_handler/request_handler.h"
+#include "http/session/session.h"
+#include "http/request_handler/request_handler_factory.h"
+#include "http/request_handler/request_handler.h"
 #include "nginx/config_parser.h"
 #include "nginx/config.h"
 #include "nginx/config_statement.h"

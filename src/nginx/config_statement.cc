@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "nginx/config_statement.h"
 #include "nginx/config.h"
 
@@ -38,6 +39,22 @@ std::string config_statement::to_string(int depth)
 
   serialized_statement.append("\n");
   return serialized_statement;
+}
+
+std::string config_statement::get_root() const
+{
+
+  std::string root;
+
+  if (tokens_[0] == "root")
+  {
+    root = tokens_[1];
+    // remove double quotes
+    root.erase(std::remove(root.begin(), root.end(),'\"'), root.end());
+  }
+  
+  return root;
+
 }
 
 } // namespace nginx
