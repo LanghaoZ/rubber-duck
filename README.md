@@ -38,7 +38,7 @@ For each request, the server establishes a session. The session uses request_par
 
 Here's commands you should be aware of when developing this project.
 
-To build the program, run
+To construct a fresh build for the program, run
 
 ```
 $ mkdir build
@@ -47,13 +47,14 @@ $ cmake ..
 $ make
 ```
 
-To start the server after the build, run
+The nginx config is stored under the directory of /configs.
+To start the server, run
 
 ```
 $ ./bin/server ../configs/developent.conf
 ```
 
-To unit test, run
+To run all test suites associated to this program, run
 
 ```
 $ make test
