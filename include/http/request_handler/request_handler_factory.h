@@ -2,7 +2,7 @@
 #define HTTP_REQUEST_HANDLER_FACTORY_H
 
 #include <string>
-#include <unordered_map> 
+#include <map> 
 #include "http/request_handler/request_handler.h"
 #include "nginx/config.h"
 
@@ -31,6 +31,9 @@ public:
   // dispatch an appropriate request handler for a given request uri
   std::shared_ptr<request_handler> dispatch(const std::string& uri);
 
+  // get const reference to request_handler_names_ for status display
+  const std::map<std::string, std::string>& get_request_handler_names();
+
 private:
   request_handler_factory();
 
@@ -39,7 +42,10 @@ private:
     const std::string& location_handler, const nginx::config& config);
 
   // hash map that maps from location path to request handler
-  std::unordered_map<std::string, std::shared_ptr<request_handler>> request_handlers_;
+  std::map<std::string, std::shared_ptr<request_handler>> request_handlers_;
+
+  // hash map that maps from location path to handler name
+  std::map<std::string, std::string> request_handler_names_;
   
   // 404 handler
   std::shared_ptr<request_handler> http_404_request_handler_; 

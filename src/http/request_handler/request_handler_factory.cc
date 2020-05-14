@@ -14,6 +14,7 @@ namespace request_handler {
 
 request_handler_factory::request_handler_factory()
   : request_handlers_(),
+    request_handler_names_(),
     http_404_request_handler_(std::make_shared<not_found_request_handler>())
 {
 }
@@ -42,6 +43,7 @@ void request_handler_factory::init(const std::vector<nginx::location>& locations
     if (handler != nullptr)
     {
       request_handlers_[locations[i].path] = handler;
+      request_handler_names_[locations[i].path] = locations[i].handler;
     }
 
   }
@@ -90,6 +92,11 @@ request_handler* request_handler_factory::create_handler(const std::string& loca
   }
 
   return nullptr;
+}
+
+const std::map<std::string, std::string>& request_handler_factory::get_request_handler_names()
+{
+  return request_handler_names_;
 }
 
 } // namespace request_handler
