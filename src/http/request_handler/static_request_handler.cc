@@ -7,7 +7,6 @@
 #include "logging/logging.h"
 #include "nginx/config.h"
 #include "nginx/location.h"
-#include "http/server/server.h"
 #include "http/status_code.h"
 
 namespace http {
@@ -32,7 +31,6 @@ response static_request_handler::handle_request(const request::request& req)
   std::string request_path;
   if (!preprocess_request_path(req, res, request_path))
   {
-    server::server::update_request_history(req.uri, status_code::bad_request);
     return res;
   }
   
@@ -44,7 +42,6 @@ response static_request_handler::handle_request(const request::request& req)
   if (!is)
   {
     res = status_code_to_stock_response(status_code::not_found);
-    server::server::update_request_history(req.uri, status_code::not_found);
     return res;
   }
 
@@ -56,9 +53,7 @@ response static_request_handler::handle_request(const request::request& req)
 
   res.headers[header::field_name_type_to_string(header::content_length)] = std::to_string(res.body.size());
   res.headers[header::field_name_type_to_string(header::content_type)] = extension_to_type(extension);
-
-  server::server::update_request_history(req.uri, status_code::ok);
-  
+ 
   return res;
 }
 

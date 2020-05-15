@@ -1,7 +1,6 @@
 #include "http/request_handler/not_found_request_handler.h"
 #include "nginx/config.h"
 #include "nginx/location.h"
-#include "http/server/server.h"
 #include "http/status_code.h"
 
 namespace http {
@@ -14,7 +13,6 @@ not_found_request_handler* not_found_request_handler::init(const std::string& lo
 
 response not_found_request_handler::handle_request(const request::request& req)
 {
-  server::server::update_request_history(req.uri, status_code::not_found);
   return status_code_to_stock_response(status_code::not_found);
 }
 

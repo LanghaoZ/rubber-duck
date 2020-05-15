@@ -22,8 +22,6 @@ response status_request_handler::handle_request(const request::request& req)
   response res;
   res.code = status_code::ok;
 
-  server::server::update_request_history(req.uri, status_code::ok);
-
   std::string request_breakdown = "";
   std::string handler_breakdown = "";
 

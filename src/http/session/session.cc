@@ -13,6 +13,7 @@
 #include "logging/logging.h"
 #include "http/request_handler/request_handler_factory.h"
 #include "http/status_code.h"
+#include "http/server/server.h"
 
 using boost::asio::ip::tcp;
 
@@ -71,6 +72,8 @@ int session::handle_read(const boost::system::error_code& ec,
         = request_handler::request_handler_factory::get_instance().dispatch(request_.uri);
 
       res_ = request_handler.get()->handle_request(request_);
+
+      server::server::update_request_history(request_.uri, res_.code);
 
       do_write();
       return 0;

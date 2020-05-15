@@ -1,7 +1,6 @@
 #include "http/request_handler/echo_request_handler.h"
 #include "http/request/request.h"
 #include "http/response.h"
-#include "http/server/server.h"
 #include "nginx/config.h"
 #include "nginx/location.h"
 #include "http/status_code.h"
@@ -21,8 +20,6 @@ response echo_request_handler::handle_request(const request::request& req)
 
   // set response status
   res.code = status_code::ok;
-
-  server::server::update_request_history(req.uri, status_code::ok);
 
   // set response content
   res.body = request_to_string(req);
