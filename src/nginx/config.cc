@@ -57,30 +57,20 @@ std::vector<location> config::get_locations() const
 
   for (int i = 0; i < statements_.size(); i++)
   {
-  
     if (statements_[i].get()->tokens_[0] == "location")
     {
       location location;
+
       location.path = statements_[i].get()->tokens_[1];
+
       // remove double quotes
       location.path.erase(std::remove(location.path.begin(), location.path.end(),'\"'), location.path.end());
-      location.handler = statements_[i].get()->tokens_[2];
-      
-      std::vector<std::shared_ptr<config_statement>> location_statements 
-        = statements_[i].get()->child_block_.get()->statements_;
 
-      for (int j = 0; j < location_statements.size(); j++)
-      {
-        if (location_statements[j].get()->tokens_[0] == "root")
-        {
-          location.root = location_statements[j].get()->get_root();
-        }
-      }
+      location.handler = statements_[i].get()->tokens_[2];
+      location.child_block = *statements_[i]->child_block_;
 
       locations.push_back(location);
-
     }
-    
   }
 
   return locations;

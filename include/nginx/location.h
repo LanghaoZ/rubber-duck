@@ -12,14 +12,14 @@ namespace nginx {
  * struct representation of location directive
  * 
  * location <path> <handler> {
- *   root <root>;
+ *   ...
  * }
  * 
  */
 struct location {
   std::string path;
   std::string handler;
-  std::string root;
+  config child_block; // everything inside curly brackets
 };
 
 } // namespace nginx

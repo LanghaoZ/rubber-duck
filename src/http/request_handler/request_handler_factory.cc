@@ -25,20 +25,9 @@ void request_handler_factory::init(const std::vector<nginx::location>& locations
   for (int i = 0; i < locations.size(); i++)
   {    
 
-    // reconstruct config from location
-    nginx::config config;
-    
-    if (locations[i].root.size() > 0)
-    {
-      auto root_config_statement = std::make_shared<nginx::config_statement>();
-      root_config_statement.get()->tokens_.push_back("root");
-      root_config_statement.get()->tokens_.push_back("\"" + locations[i].root + "\"");
-      config.statements_.push_back(root_config_statement);
-    }
-    
     // obtain ownwership of the request_handler pointer
     auto handler = std::shared_ptr<request_handler>(
-      create_handler(locations[i].path, locations[i].handler, config));
+      create_handler(locations[i].path, locations[i].handler, locations[i].child_block));
 
     if (handler != nullptr)
     {

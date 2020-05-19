@@ -132,10 +132,8 @@ TEST(ConfigTest, GetLocationsTest)
   EXPECT_EQ(locations.size(), 2);
   EXPECT_EQ(locations[0].path, "/static1/");
   EXPECT_EQ(locations[0].handler, "static_handler");
-  EXPECT_EQ(locations[0].root, "./public/public1");
   EXPECT_EQ(locations[1].path, "/static2/");
   EXPECT_EQ(locations[1].handler, "static_handler");
-  EXPECT_EQ(locations[1].root, "./public/public2");
 }
 
 } // namespace nginx
